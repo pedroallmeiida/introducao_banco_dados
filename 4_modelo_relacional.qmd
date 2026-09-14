@@ -1,0 +1,297 @@
+---
+title: |
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
+    <img src="Marca_UEPB.png" alt="Logo UEPB" style="width:150px; height:auto;">
+    <span style="display:block;">O modelo de dados relacional</span>
+  </div>
+title-slide-attributes:
+  data-background-color: "#f2f2f3"
+author: "Professor: Pedro M. Almeida-Junior"
+institute: "Estatística e Ciência de Dados-UEPB"
+format:
+  revealjs:
+    width: 1000
+    margin: 0.1
+    logo: Marca_UEPB.png
+    theme: [default, hscroll.scss]
+    transition: slide
+    background-transition: fade
+    smaller: true
+    scrollable: true
+css: hscroll.scss
+editor:
+  markdown:
+    wrap: 72
+---
+
+# O modelo relacional
+
+---
+
+### O modelo relacional
+
+O modelo relacional representa os dados por meio de relações, normalmente apresentadas como tabelas.
+
+Uma relação possui:
+
+- um nome;
+- atributos com significado definido;
+- valores organizados em tuplas;
+- regras que limitam os valores permitidos.
+
+O modelo é a base conceitual de grande parte dos SGBDs usados atualmente.
+
+---
+
+### Relação, tupla e atributo
+
+Considere a relação `ALUNO`:
+
+| Numero_aluno | Nome | Curso |
+|---|---|---|
+| 101 | Ana Silva | Estatística |
+| 102 | Bruno Lima | Computação |
+
+- A tabela representa a **relação** `ALUNO`.
+- Cada linha é uma **tupla**.
+- Cada coluna é um **atributo**.
+
+Uma tupla descreve uma ocorrência completa da entidade representada.
+
+---
+
+### Domínio
+
+O domínio é o conjunto de valores válidos para um atributo.
+
+Exemplos:
+
+- `Numero_aluno`: números inteiros positivos;
+- `Nome`: cadeia de caracteres;
+- `Creditos`: inteiros maiores que zero;
+- `Nota`: valores definidos pelo sistema de avaliação;
+- `Semestre`: valores no formato estabelecido pela instituição.
+
+Definir domínios evita valores incompatíveis ou ambíguos.
+
+---
+
+### Esquema de relação
+
+Um esquema de relação descreve o nome da relação e seus atributos.
+
+Exemplos:
+
+```text
+ALUNO(Numero_aluno, Nome, Tipo_aluno, Curso)
+DISCIPLINA(Numero_disciplina, Nome_disciplina, Creditos, Departamento)
+TURMA(Codigo_turma, Numero_disciplina, Semestre, Ano)
+```
+
+O esquema define a estrutura; as tuplas representam os dados armazenados nessa estrutura.
+
+---
+
+### Chaves
+
+Uma chave identifica uma tupla de maneira única.
+
+- **Superchave:** atributo ou conjunto de atributos que identifica uma tupla.
+- **Chave candidata:** superchave mínima.
+- **Chave primária:** chave candidata escolhida para identificar os registros.
+- **Chave estrangeira:** atributo que referencia a chave de outra relação.
+
+As chaves expressam identidade e conexão entre os dados.
+
+---
+
+### Chave primária no banco UNIVERSIDADE
+
+Na relação `ALUNO`, podemos definir:
+
+```text
+ALUNO(Numero_aluno, Nome, Tipo_aluno, Curso)
+Chave primária: Numero_aluno
+```
+
+Na relação `DISCIPLINA`:
+
+```text
+DISCIPLINA(Numero_disciplina, Nome_disciplina, Creditos, Departamento)
+Chave primária: Numero_disciplina
+```
+
+Dois alunos não podem possuir o mesmo `Numero_aluno`.
+
+---
+
+### Chaves estrangeiras e relacionamentos
+
+Uma chave estrangeira conecta relações diferentes.
+
+```text
+TURMA(Codigo_turma, Numero_disciplina, Semestre, Ano)
+Chave estrangeira: Numero_disciplina
+```
+
+O valor de `Numero_disciplina` em `TURMA` deve corresponder a uma disciplina existente em `DISCIPLINA`.
+
+Assim, o banco representa relacionamentos sem repetir todos os dados da disciplina em cada turma.
+
+---
+
+### Integridade de domínio
+
+A integridade de domínio exige que cada atributo receba valores válidos para seu domínio.
+
+Exemplos de violações:
+
+- texto em um atributo definido como inteiro;
+- número negativo de créditos;
+- nota fora do conjunto permitido;
+- semestre com formato inválido.
+
+O SGBD pode rejeitar a operação antes que um dado inconsistente seja armazenado.
+
+---
+
+### Integridade de entidade
+
+A integridade de entidade estabelece que:
+
+- a chave primária deve identificar cada tupla;
+- a chave primária não pode ser nula;
+- duas tuplas não podem possuir a mesma chave primária.
+
+Sem essa regra, o sistema não conseguiria distinguir corretamente dois alunos ou duas disciplinas.
+
+---
+
+### Integridade referencial
+
+A integridade referencial controla as chaves estrangeiras.
+
+Se uma turma referencia uma disciplina, essa disciplina precisa existir em `DISCIPLINA`.
+
+O SGBD deve impedir situações como:
+
+- cadastrar uma turma para uma disciplina inexistente;
+- apagar uma disciplina ainda referenciada sem uma regra definida;
+- alterar uma chave referenciada e deixar referências quebradas.
+
+---
+
+### Operações de atualização
+
+As três operações básicas são:
+
+- **Inserção:** acrescenta uma nova tupla.
+- **Exclusão:** remove uma tupla existente.
+- **Alteração:** modifica valores de uma tupla.
+
+Cada operação deve respeitar domínios, chaves e relacionamentos.
+
+Uma atualização pode ser rejeitada quando viola alguma restrição de integridade.
+
+---
+
+### Exemplo de inserção
+
+Para inserir uma nova disciplina, é necessário fornecer valores válidos:
+
+```text
+(501, "Banco de Dados", 4, "Computação")
+```
+
+A operação só é válida se:
+
+- `501` ainda não for usado por outra disciplina;
+- `4` for um número válido de créditos;
+- o departamento existir ou seguir o domínio definido;
+- todos os atributos obrigatórios forem preenchidos.
+
+---
+
+### Exemplo de exclusão
+
+Excluir uma disciplina pode afetar outras relações.
+
+Antes de remover `DISCIPLINA(501)`, o SGBD precisa verificar se existem:
+
+- turmas associadas;
+- matrículas no histórico escolar;
+- outras disciplinas que a tenham como pré-requisito.
+
+O banco pode impedir a exclusão, remover dependências ou exigir uma ação explícita, conforme a regra definida.
+
+---
+
+### Exemplo de alteração
+
+Alterar o número de uma disciplina que aparece como chave estrangeira em `TURMA` pode quebrar referências.
+
+Por isso, o SGBD pode:
+
+- rejeitar a alteração;
+- atualizar as referências relacionadas;
+- exigir que a mudança seja feita dentro de uma transação controlada.
+
+A regra deve refletir o significado do negócio e não apenas a estrutura da tabela.
+
+---
+
+### Relações no banco UNIVERSIDADE
+
+Um possível conjunto de relações é:
+
+```text
+ALUNO(Numero_aluno, Nome, Tipo_aluno, Curso)
+DISCIPLINA(Numero_disciplina, Nome_disciplina, Creditos, Departamento)
+TURMA(Codigo_turma, Numero_disciplina, Semestre, Ano)
+HISTORICO(Numero_aluno, Codigo_turma, Nota)
+PRE_REQUISITO(Numero_disciplina, Numero_pre_requisito)
+```
+
+As relações podem ser conectadas por chaves estrangeiras, formando uma visão integrada da universidade.
+
+---
+
+### Do modelo relacional à consulta
+
+Com as relações estruturadas, podemos fazer perguntas como:
+
+- quais disciplinas um aluno cursou?
+- quais turmas foram oferecidas em determinado semestre?
+- quais disciplinas são pré-requisitos de Banco de Dados?
+- quais alunos obtiveram determinada nota?
+
+O SGBD combina relações por meio de operações de seleção, projeção e junção.
+
+---
+
+### Seleção, projeção e junção
+
+- **Seleção:** escolhe tuplas que satisfazem uma condição.
+- **Projeção:** escolhe atributos específicos.
+- **Junção:** combina tuplas relacionadas por atributos comuns.
+
+Exemplo conceitual:
+
+```text
+ALUNO junção HISTORICO junção TURMA
+```
+
+Essa combinação permite relacionar o nome do aluno à turma cursada e à nota obtida.
+
+---
+---
+
+### Atividade
+
+Considere as relações `ALUNO`, `DISCIPLINA`, `TURMA` e `HISTORICO`.
+
+1. Escolha uma chave primária para cada relação.
+2. Identifique duas chaves estrangeiras.
+3. Dê um exemplo de violação de domínio.
+4. Explique por que uma disciplina não deve ser excluída sem verificar suas turmas.
+5. Descreva uma junção que retorne nome do aluno, disciplina e nota.

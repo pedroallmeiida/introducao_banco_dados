@@ -1,0 +1,197 @@
+---
+title: |
+  <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
+    <img src="Marca_UEPB.png" alt="Logo UEPB" style="width:150px; height:auto;">
+    <span style="display:block;">Conceitos e arquitetura do SGBD</span>
+  </div>
+title-slide-attributes:
+  data-background-color: "#f2f2f3"
+author: "Professor: Pedro M. Almeida-Junior"
+institute: "Estatística e Ciência de Dados-UEPB"
+format:
+  revealjs:
+    width: 1000
+    margin: 0.1
+    logo: Marca_UEPB.png
+    theme: [default, hscroll.scss]
+    transition: slide
+    background-transition: fade
+    smaller: true
+    scrollable: true
+css: hscroll.scss
+editor:
+  markdown:
+    wrap: 72
+---
+
+# Conceitos e arquitetura
+
+---
+
+### Banco de dados, SGBD e sistema de banco de dados
+
+- **Banco de dados:** coleção organizada de dados relacionados.
+- **SGBD:** conjunto de programas que define, armazena, consulta, atualiza e protege os dados.
+- **Sistema de banco de dados:** banco de dados, SGBD, aplicações e usuários trabalhando em conjunto.
+
+A distinção é importante: os dados são o conteúdo; o SGBD fornece os mecanismos para gerenciá-los.
+
+---
+
+### O ambiente de um SGBD
+
+Um ambiente de banco de dados reúne:
+
+- hardware e dispositivos de armazenamento;
+- software do SGBD e sistemas operacionais;
+- aplicações que acessam os dados;
+- banco de dados e catálogo de metadados;
+- usuários, administradores e regras organizacionais.
+
+O SGBD funciona como a camada que organiza o acesso entre aplicações, usuários e dados persistentes.
+
+---
+
+### Exemplo: banco UNIVERSIDADE
+
+Considere um sistema para controlar alunos, disciplinas, turmas e notas.
+
+O banco precisa representar:
+
+- dados cadastrais de alunos e disciplinas;
+- oferta de turmas por semestre;
+- matrícula dos alunos;
+- notas e histórico escolar;
+- relações de pré-requisito entre disciplinas.
+
+O SGBD deve permitir que diferentes aplicações consultem e atualizem essas informações com consistência.
+
+---
+
+### Esquema e instância
+
+- **Esquema:** descrição da estrutura do banco, incluindo tabelas, atributos, relacionamentos e restrições.
+- **Instância:** conjunto de dados armazenados em um momento específico.
+
+Exemplo:
+
+- o esquema define que `ALUNO` possui `Numero_aluno`, `Nome` e `Curso`;
+- a instância contém os alunos registrados hoje.
+
+O esquema muda com pouca frequência; a instância muda continuamente.
+
+---
+
+### Metadados e catálogo
+
+Metadados são dados que descrevem outros dados.
+
+O catálogo do SGBD pode registrar:
+
+- nomes das tabelas e dos atributos;
+- tipos e domínios dos dados;
+- chaves e relacionamentos;
+- restrições de integridade;
+- usuários, privilégios e visões;
+- índices e informações de armazenamento.
+
+Essas informações permitem ao SGBD interpretar consultas e validar atualizações.
+
+---
+
+### Arquitetura de três esquemas
+
+A arquitetura separa o banco em três níveis:
+
+1. **Nível externo:** visões específicas para usuários ou aplicações.
+2. **Nível conceitual:** descrição lógica completa do banco.
+3. **Nível interno:** organização física dos arquivos, páginas e índices.
+
+A separação reduz o acoplamento entre a forma como os dados são armazenados e a forma como são utilizados.
+
+---
+
+### Exemplo dos três níveis
+
+No banco UNIVERSIDADE:
+
+- uma secretaria pode visualizar alunos, cursos e matrículas;
+- o esquema conceitual relaciona `ALUNO`, `DISCIPLINA`, `TURMA` e `HISTORICO_ESCOLAR`;
+- o nível interno define arquivos, índices e páginas usados no armazenamento.
+
+Cada usuário acessa uma visão adequada à sua tarefa, sem precisar conhecer os detalhes físicos.
+
+---
+
+### Independência de dados
+
+A independência de dados permite modificar um nível sem reescrever todos os demais.
+
+- **Independência física:** mudar arquivos, índices ou organização do armazenamento sem alterar o esquema conceitual.
+- **Independência lógica:** alterar o esquema conceitual sem modificar todas as visões e aplicações externas.
+
+Essa propriedade facilita a manutenção e prolonga a vida útil das aplicações.
+
+---
+
+### Linguagens do SGBD
+
+O SGBD oferece linguagens ou interfaces para diferentes tarefas:
+
+- **Definição de dados:** cria e altera estruturas, tipos e restrições.
+- **Manipulação de dados:** insere, modifica e remove registros.
+- **Consulta:** recupera informações segundo critérios definidos.
+- **Controle:** gerencia privilégios, transações e operações administrativas.
+
+Na prática, SQL reúne grande parte dessas funções em uma linguagem padronizada.
+
+---
+
+### Usuários de um banco de dados
+
+- **Administrador do banco de dados:** gerencia segurança, desempenho, disponibilidade e recuperação.
+- **Projetista de banco:** define estruturas, relacionamentos e restrições.
+- **Desenvolvedor de aplicações:** cria programas e consultas que usam o SGBD.
+- **Usuário final:** consulta ou atualiza informações por meio de aplicações ou interfaces.
+
+A responsabilidade é compartilhada, mas cada papel possui objetivos diferentes.
+
+---
+
+### Serviços oferecidos pelo SGBD
+
+Além de armazenar e consultar dados, o SGBD fornece:
+
+- controle de acesso e autenticação;
+- controle de concorrência;
+- recuperação após falhas;
+- manutenção de restrições de integridade;
+- gerenciamento de transações;
+- cópia de segurança e restauração;
+- otimização de consultas.
+
+Esses serviços evitam que cada aplicação precise implementá-los de forma independente.
+
+---
+
+### Fluxo de uma consulta
+
+1. O usuário ou a aplicação solicita uma informação.
+2. O SGBD analisa a consulta e verifica permissões.
+3. O sistema escolhe uma estratégia de execução.
+4. O mecanismo de armazenamento localiza os dados.
+5. O SGBD retorna o resultado ao usuário.
+
+O usuário descreve **o que** deseja; o SGBD decide **como** obter o resultado.
+
+---
+
+
+### Atividade
+
+Considere o banco UNIVERSIDADE e responda:
+
+1. Qual é um exemplo de esquema e qual é um exemplo de instância?
+2. Que informações poderiam aparecer no catálogo do SGBD?
+3. Qual mudança representa independência física: criar um índice ou alterar o nome de um atributo?
+4. Que visão seria adequada para a secretaria e qual seria adequada para um professor?
