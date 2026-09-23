@@ -107,7 +107,7 @@ desempenham um papel crítico em quase todas as
 negócios, comércio eletrônico, engenharia, medicina,
 genética, direito, educação e biblioteconomia. 
 
-- O termo banco de dados (do original database) é tão utilizado que precisamos começar por sua definição. E nossa definição inicial é bastante genérica.
+- O termo banco de dados (do original database) é tão utilizado que precisamos começar por sua definição. 
 
 ---
 
@@ -178,7 +178,7 @@ aplicações
   Realiza o armazenamento dos dados em mídia controlada pelo SGBD.
 
 4. **Manipulação de dados**
-  Permite consultar dados, atualizar informações para refletir mudanças no minimundo e gerar relatórios.
+  Permite consultar dados, atualizar informações para refletir mudanças dos dados e gerar relatórios.
 
 5. **Compartilhamento**
   Suporta acesso simultâneo por múltiplos usuários e aplicações, com controle e consistência.
@@ -383,7 +383,7 @@ Em bancos médios e grandes, há muitos tipos de registros e muitos relacionamen
 A manipulação envolve duas operações principais:
 
 - **Consulta:** recuperar informações armazenadas.
-- **Atualização:** inserir, alterar ou remover dados para refletir mudanças no minimundo.
+- **Atualização:** inserir, alterar ou remover dados para refletir mudanças nos dados.
 
 As solicitações são inicialmente descritas pelo usuário e depois traduzidas para a linguagem de consulta do SGBD.
 
@@ -616,7 +616,6 @@ Esses profissionais:
 
 Eles conectam as necessidades do usuário às estruturas e serviços oferecidos pelo banco.
 
----
 
 # Trabalhadores dos bastidores
 
