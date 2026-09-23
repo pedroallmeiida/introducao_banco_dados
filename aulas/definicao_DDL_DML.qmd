@@ -1,0 +1,155 @@
+---
+title: "Definição de DDL e DML"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-tools: true
+---
+
+# Introdução
+
+SQL (*Structured Query Language*) é a linguagem utilizada para definir,
+manipular e consultar dados em bancos de dados relacionais. Entre as suas
+categorias mais importantes estão a **DDL** (*Data Definition Language*) e a
+**DML** (*Data Manipulation Language*).
+
+A DDL trabalha com a estrutura do banco de dados, como tabelas, colunas e
+restrições. A DML trabalha com os registros armazenados nessas estruturas,
+permitindo inserir, alterar e excluir dados.
+
+# DDL: linguagem de definição de dados
+
+A DDL (*Data Definition Language*) reúne os comandos responsáveis por criar,
+alterar e excluir objetos do banco de dados. Esses comandos modificam o
+**esquema** ou a estrutura dos dados.
+
+## `CREATE TABLE`
+
+O comando `CREATE TABLE` cria uma tabela. No exemplo abaixo, a tabela `aluno`
+é definida com identificador, nome, idade, renda familiar e data de matrícula.
+A cláusula `PRIMARY KEY` identifica a coluna que possui um valor único para
+cada registro.
+
+```{.sql}
+CREATE TABLE aluno (
+    id_aluno INT PRIMARY KEY,
+    nome_aluno VARCHAR(50),
+    idade_aluno INT,
+    renda_familiar FLOAT,
+    data_matricula DATE
+);
+```
+
+## `ALTER TABLE`
+
+O comando `ALTER TABLE` é utilizado para modificar uma tabela já existente,
+como adicionar ou remover colunas. Por exemplo, o comando a seguir adiciona a
+coluna `email_aluno`:
+
+```{.sql}
+ALTER TABLE aluno
+ADD COLUMN email_aluno VARCHAR(100);
+```
+
+## `DROP TABLE`
+
+O comando `DROP TABLE` exclui a tabela e todos os dados armazenados nela. Por
+ser uma operação destrutiva, deve ser utilizado com cuidado.
+
+```{.sql}
+DROP TABLE aluno;
+```
+
+# DML: linguagem de manipulação de dados
+
+A DML (*Data Manipulation Language*) reúne os comandos que manipulam os
+registros de uma tabela. Diferentemente da DDL, esses comandos não alteram a
+estrutura da tabela.
+
+## `INSERT INTO`
+
+O comando `INSERT INTO` insere novos registros. Os valores devem ser
+informados na mesma ordem das colunas listadas no comando.
+
+```{.sql}
+INSERT INTO aluno (
+    id_aluno,
+    nome_aluno,
+    idade_aluno,
+    renda_familiar,
+    data_matricula
+)
+VALUES
+    (198733, 'pedro', 30, 3000, '2026-02-01'),
+    (199874, 'ana', 22, 1500, '2026-02-05');
+```
+
+## `UPDATE`
+
+O comando `UPDATE` altera valores de registros existentes. A cláusula `WHERE`
+é essencial para limitar quais registros serão modificados. Sem ela, todos os
+registros da tabela podem ser alterados.
+
+```{.sql}
+UPDATE aluno
+SET idade_aluno = 25
+WHERE id_aluno = 199874;
+```
+
+## `DELETE`
+
+O comando `DELETE` remove registros de uma tabela. Assim como no `UPDATE`, a
+cláusula `WHERE` deve ser usada para evitar a remoção de todos os registros.
+
+```{.sql}
+DELETE FROM aluno
+WHERE id_aluno = 198733;
+```
+
+# Consultas com `SELECT`
+
+O comando `SELECT` consulta dados, mas normalmente é classificado como DQL
+(*Data Query Language*), e não como DML. Ele aparece junto dos exemplos de
+manipulação porque permite verificar o resultado das operações realizadas.
+
+## Consultar todos os dados
+
+```{.sql}
+SELECT *
+FROM aluno;
+```
+
+## Consultar colunas específicas
+
+```{.sql}
+SELECT id_aluno, nome_aluno
+FROM aluno;
+```
+
+## Filtrar registros
+
+A cláusula `WHERE` permite retornar apenas os registros que atendem a uma
+condição. Neste exemplo, são selecionados os alunos cuja renda familiar é
+maior que 2000.
+
+```{.sql}
+SELECT *
+FROM aluno
+WHERE renda_familiar > 2000;
+```
+
+# Finalidades dos comandos
+
+| Categoria | Comandos | Finalidade |
+|:--|:--|:--|
+| DDL | `CREATE TABLE` | Criar uma tabela |
+| DDL | `ALTER TABLE` | Alterar a estrutura de uma tabela |
+| DDL | `DROP TABLE` | Excluir uma tabela |
+| DML | `INSERT INTO` | Inserir registros |
+| DML | `UPDATE` | Alterar registros |
+| DML | `DELETE` | Excluir registros |
+| DQL | `SELECT` | Consultar registros |
+
