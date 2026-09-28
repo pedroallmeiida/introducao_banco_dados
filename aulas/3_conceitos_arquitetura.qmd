@@ -130,6 +130,30 @@ A independência de dados permite modificar um nível sem reescrever todos os de
 - **Independência física:** mudar arquivos, índices ou organização do armazenamento sem alterar o esquema conceitual.
 - **Independência lógica:** alterar o esquema conceitual sem modificar todas as visões e aplicações externas.
 
+---
+
+### Exemplos:
+
+**Exemplo de independência física:**
+
+O DBA pode criar um índice para acelerar uma consulta sem alterar as tabelas ou os programas que usam o banco:
+
+```sql
+CREATE INDEX idx_aluno_nome ON ALUNO (Nome);
+```
+
+**Exemplo de independência lógica:**
+
+O esquema pode receber um novo atributo, como `Email`, enquanto uma visão já utilizada pela secretaria continua funcionando:
+
+```sql
+ALTER TABLE ALUNO ADD COLUMN Email VARCHAR(120);
+
+CREATE VIEW alunos_secretaria AS
+SELECT Numero_aluno, Nome, Curso
+FROM ALUNO;
+```
+
 Essa propriedade facilita a manutenção e prolonga a vida útil das aplicações.
 
 ---

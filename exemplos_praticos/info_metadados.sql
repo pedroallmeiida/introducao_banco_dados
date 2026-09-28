@@ -1,4 +1,5 @@
 
+--
 CREATE TABLE aluno_com_descricao (
 id_aluno int primary key comment 'codigo do aluno',
 nome_aluno varchar(50) comment 'nome do aluno',

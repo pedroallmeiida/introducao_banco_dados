@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.4.551">
 
   <meta name="author" content="Professor: Pedro M. Almeida-Junior">
-  <title>quarto-inputed9bdf29</title>
+  <title>quarto-input2933ae46</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -486,14 +486,65 @@ Professor: Pedro M. Almeida-Junior
 <section class="slide level2">
 
 <h3 id="chaves">Chaves</h3>
-<p>Uma chave identifica uma tupla de maneira única.</p>
+<p>Para relacionar as diferentes tabelas em um banco de dados, vamos utilizar o conceito de chaves.</p>
 <ul>
-<li><strong>Superchave:</strong> atributo ou conjunto de atributos que identifica uma tupla.</li>
-<li><strong>Chave candidata:</strong> superchave mínima.</li>
-<li><strong>Chave primária:</strong> chave candidata escolhida para identificar os registros.</li>
-<li><strong>Chave estrangeira:</strong> atributo que referencia a chave de outra relação.</li>
+<li><strong>Chave:</strong> é um identificador único de uma tabela.</li>
+<li><strong>Chave primária:</strong> identifica cada registro (linha) da tabela unicamente.</li>
+<li><strong>Chave estrangeira:</strong> chave primária de outra tabela presente na tabela em questão.</li>
 </ul>
 <p>As chaves expressam identidade e conexão entre os dados.</p>
+</section>
+<section class="slide level2">
+
+<h4 id="exemplo">Exemplo:</h4>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>ALUNO</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>codigo_aluno (PK)</th>
+<th>Nome</th>
+<th>codigo_curso (FK)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>101</td>
+<td>Ana Silva</td>
+<td>10</td>
+</tr>
+<tr class="even">
+<td>102</td>
+<td>Bruno Lima</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:50%;">
+<p><strong>CURSO</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>codigo_curso (PK)</th>
+<th>Nome_curso</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10</td>
+<td>Estatística</td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>Estatística e Ciência de Dados</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><code>codigo_aluno</code> é a <strong>chave primária (pk)</strong> de <code>ALUNO</code>: identifica cada aluno de forma única.</p>
+<p><code>codigo_curso</code> é uma <strong>chave estrangeira (fk)</strong> em <code>ALUNO</code>: seus valores devem existir na chave primária <code>codigo_curso</code> de <code>CURSO</code>.</p>
 </section>
 <section class="slide level2">
 
@@ -623,7 +674,7 @@ Professor: Pedro M. Almeida-Junior
 </ul>
 <p>O SGBD combina relações por meio de operações de seleção, projeção e junção.</p>
 </section>
-<section class="slide level2 scrollable">
+<section class="slide level2">
 
 <h3 id="seleção-projeção-e-junção">Seleção, projeção e junção</h3>
 <ul>
@@ -634,6 +685,9 @@ Professor: Pedro M. Almeida-Junior
 <p>Exemplo conceitual:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb7-1"><a href=""></a>ALUNO junção HISTORICO junção TURMA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Essa combinação permite relacionar o nome do aluno à turma cursada e à nota obtida.</p>
+</section>
+<section class="slide level2 scrollable">
+
 <h3 id="atividade">Atividade</h3>
 <p>Considere as relações <code>ALUNO</code>, <code>DISCIPLINA</code>, <code>TURMA</code> e <code>HISTORICO</code>.</p>
 <ol type="1">
@@ -641,7 +695,6 @@ Professor: Pedro M. Almeida-Junior
 <li>Identifique duas chaves estrangeiras.</li>
 <li>Dê um exemplo de violação de domínio.</li>
 <li>Explique por que uma disciplina não deve ser excluída sem verificar suas turmas.</li>
-<li>Descreva uma junção que retorne nome do aluno, disciplina e nota.</li>
 </ol>
 <div class="quarto-auto-generated-content">
 <p><img src="Marca_UEPB.png" class="slide-logo"></p>

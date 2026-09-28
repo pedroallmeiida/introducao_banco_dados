@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="3_conceitos_arquitetura_files/libs/clipboard/clipboard.min.js"></script>
-<script src="3_conceitos_arquitetura_files/libs/quarto-html/tabby.min.js"></script>
-<script src="3_conceitos_arquitetura_files/libs/quarto-html/popper.min.js"></script>
-<script src="3_conceitos_arquitetura_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="3_conceitos_arquitetura_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="3_conceitos_arquitetura_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="3_conceitos_arquitetura_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="3_conceitos_arquitetura_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="2.1_caracteristicas_banco_dados_files/libs/clipboard/clipboard.min.js"></script>
+<script src="2.1_caracteristicas_banco_dados_files/libs/quarto-html/tabby.min.js"></script>
+<script src="2.1_caracteristicas_banco_dados_files/libs/quarto-html/popper.min.js"></script>
+<script src="2.1_caracteristicas_banco_dados_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="2.1_caracteristicas_banco_dados_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="2.1_caracteristicas_banco_dados_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="2.1_caracteristicas_banco_dados_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="2.1_caracteristicas_banco_dados_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.4.551">
 
   <meta name="author" content="Professor: Pedro M. Almeida-Junior">
-  <title>quarto-inputc39b3120</title>
+  <title>quarto-input6a932077</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="3_conceitos_arquitetura_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="3_conceitos_arquitetura_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="2.1_caracteristicas_banco_dados_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="2.1_caracteristicas_banco_dados_files/libs/revealjs/dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -95,12 +95,12 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="3_conceitos_arquitetura_files/libs/revealjs/dist/theme/quarto.css">
+  <link rel="stylesheet" href="2.1_caracteristicas_banco_dados_files/libs/revealjs/dist/theme/quarto.css">
   <link rel="stylesheet" href="hscroll.scss">
-  <link href="3_conceitos_arquitetura_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="3_conceitos_arquitetura_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="3_conceitos_arquitetura_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="3_conceitos_arquitetura_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link href="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
   .callout {
@@ -394,7 +394,7 @@
 
 <section id="title-slide" data-background-color="#f2f2f3" class="quarto-title-block center">
   <h1 class="title"><div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
-<p><img src="Marca_UEPB.png" alt="Logo UEPB" style="width:150px; height:auto;"> <span style="display:block;">Conceitos e arquitetura do SGBD</span></p>
+<p><img src="Marca_UEPB.png" alt="Logo UEPB" style="width:150px; height:auto;"> <span style="display:block;">Introdução a Banco de dados</span></p>
 </div></h1>
 
 <div class="quarto-title-authors">
@@ -410,181 +410,474 @@ Professor: Pedro M. Almeida-Junior
 
 </section>
 <section>
-<section id="conceitos-e-arquitetura" class="title-slide slide level1 center">
-<h1>Conceitos e arquitetura</h1>
+<section id="características-da-abordagem-de-banco-de-dados" class="title-slide slide level1 center">
+<h1>Características da abordagem de banco de dados</h1>
 
 </section>
 <section class="slide level2">
 
-<h3 id="banco-de-dados-sgbd-e-sistema-de-banco-de-dados">Banco de dados, SGBD e sistema de banco de dados</h3>
+<h3 id="abordagem-baseada-em-sgbd">abordagem baseada em SGBD</h3>
+<p>Uma abordagem baseada em SGBD se diferencia do processamento tradicional de arquivos porque oferece recursos para:</p>
 <ul>
-<li><strong>Banco de dados:</strong> coleção organizada de dados relacionados.</li>
-<li><strong>SGBD:</strong> conjunto de programas que define, armazena, consulta, atualiza e protege os dados.</li>
-<li><strong>Sistema de banco de dados:</strong> banco de dados, SGBD, aplicações e usuários trabalhando em conjunto.</li>
+<li>descrever os próprios dados;</li>
+<li>separar programas da estrutura de armazenamento;</li>
+<li>oferecer diferentes visões para diferentes usuários;</li>
+<li>compartilhar dados com segurança e controle de concorrência.</li>
 </ul>
-<p>A distinção é importante: os dados são o conteúdo; o SGBD fornece os mecanismos para gerenciá-los.</p>
+<p>Essas características permitem que várias aplicações usem uma fonte comum de dados.</p>
 </section>
 <section class="slide level2">
 
-<h3 id="o-ambiente-de-um-sgbd">O ambiente de um SGBD</h3>
-<p>Um ambiente de banco de dados reúne:</p>
+<h3 id="natureza-de-autodescrição">Natureza de autodescrição</h3>
+<p>O SGBD mantém, além dos dados, um catálogo com informações sobre o banco:</p>
 <ul>
-<li>hardware e dispositivos de armazenamento;</li>
-<li>software do SGBD e sistemas operacionais;</li>
-<li>aplicações que acessam os dados;</li>
-<li>banco de dados e catálogo de metadados;</li>
-<li>usuários, administradores e regras organizacionais.</li>
-</ul>
-<p>O SGBD funciona como a camada que organiza o acesso entre aplicações, usuários e dados persistentes.</p>
-</section>
-<section class="slide level2">
-
-<h3 id="exemplo-banco-universidade">Exemplo: banco UNIVERSIDADE</h3>
-<p>Considere um sistema para controlar alunos, disciplinas, turmas e notas.</p>
-<p>O banco precisa representar:</p>
-<ul>
-<li>dados cadastrais de alunos e disciplinas;</li>
-<li>oferta de turmas por semestre;</li>
-<li>matrícula dos alunos;</li>
-<li>notas e histórico escolar;</li>
-<li>relações de pré-requisito entre disciplinas.</li>
-</ul>
-<p>O SGBD deve permitir que diferentes aplicações consultem e atualizem essas informações com consistência.</p>
-</section>
-<section class="slide level2">
-
-<h3 id="esquema-e-instância">Esquema e instância</h3>
-<ul>
-<li><strong>Esquema:</strong> descrição da estrutura do banco, incluindo tabelas, atributos, relacionamentos e restrições.</li>
-<li><strong>Instância:</strong> conjunto de dados armazenados em um momento específico.</li>
-</ul>
-<p>Exemplo:</p>
-<ul>
-<li>o esquema define que <code>ALUNO</code> possui <code>Numero_aluno</code>, <code>Nome</code> e <code>Curso</code>;</li>
-<li>a instância contém os alunos registrados hoje.</li>
-</ul>
-<p>O esquema muda com pouca frequência; a instância muda continuamente.</p>
-</section>
-<section class="slide level2">
-
-<h3 id="metadados-e-catálogo">Metadados e catálogo</h3>
-<p>Metadados são dados que descrevem outros dados.</p>
-<p>O catálogo do SGBD pode registrar:</p>
-<ul>
-<li>nomes das tabelas e dos atributos;</li>
+<li>nomes de tabelas, campos e relacionamentos;</li>
 <li>tipos e domínios dos dados;</li>
-<li>chaves e relacionamentos;</li>
 <li>restrições de integridade;</li>
-<li>usuários, privilégios e visões;</li>
-<li>índices e informações de armazenamento.</li>
+<li>usuários, permissões e visões;</li>
+<li>estruturas de armazenamento e índices.</li>
 </ul>
-<p>Essas informações permitem ao SGBD interpretar consultas e validar atualizações.</p>
-</section>
-<section class="slide level2 scrollable">
-
-<h3 id="arquitetura-de-três-esquemas">Arquitetura de três esquemas</h3>
-<p>A arquitetura separa o banco em três níveis:</p>
-<ol type="1">
-<li><strong>Nível externo:</strong> visões específicas para usuários ou aplicações.</li>
-<li><strong>Nível conceitual:</strong> descrição lógica completa do banco.</li>
-<li><strong>Nível interno:</strong> organização física dos arquivos, páginas e índices.</li>
-</ol>
-<p>A separação reduz o acoplamento entre a forma como os dados são armazenados e a forma como são utilizados.</p>
+<p>Esse catálogo contém os <strong>metadados</strong>, isto é, dados sobre os dados.</p>
 </section>
 <section class="slide level2">
 
-<h3 id="exemplo-dos-três-níveis">Exemplo dos três níveis</h3>
+<h3 id="exemplo-de-metadados-no-banco-universidade">Exemplo de metadados no banco UNIVERSIDADE</h3>
+<p>O <strong>catálogo</strong> pode registrar que:</p>
+<ul>
+<li><code>Numero_aluno</code> é um identificador inteiro;</li>
+<li><code>Nome</code> armazena texto;</li>
+<li><code>Tipo_aluno</code> possui valores codificados;</li>
+<li><code>Numero_disciplina</code> identifica uma disciplina;</li>
+<li><code>HISTORICO_ESCOLAR</code> relaciona alunos e turmas.</li>
+</ul>
+<p>Com essas informações, o SGBD consegue validar operações e interpretar consultas sem depender de regras escondidas em cada programa.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="isolamento-entre-programas-e-dados">Isolamento entre programas e dados</h3>
+<ul>
+<li><p>No processamento tradicional de arquivos, a estrutura dos dados costuma estar escrita dentro dos programas.</p></li>
+<li><p>Se o formato do arquivo muda, vários programas precisam ser alterados.</p></li>
+<li><p>No SGBD, os programas consultam a estrutura descrita no catálogo. Assim, mudanças na organização interna podem ser feitas sem alterar todas as aplicações.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="abstração-de-dados">Abstração de dados</h3>
+<p>O usuário trabalha com conceitos próximos do problema, como:</p>
+<ul>
+<li>aluno;</li>
+<li>disciplina;</li>
+<li>turma;</li>
+<li>nota.</li>
+</ul>
+<p>Ele não precisa conhecer a posição física de cada campo no disco, o formato das páginas ou os índices usados pelo SGBD.</p>
+<p>Essa separação entre visão lógica e armazenamento físico é chamada de <strong>abstração de dados</strong>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="suporte-a-múltiplas-visões">Suporte a múltiplas visões</h3>
+<p>Um mesmo banco pode oferecer visões diferentes para grupos diferentes.</p>
 <p>No banco UNIVERSIDADE:</p>
 <ul>
-<li>uma secretaria pode visualizar alunos, cursos e matrículas;</li>
-<li>o esquema conceitual relaciona <code>ALUNO</code>, <code>DISCIPLINA</code>, <code>TURMA</code> e <code>HISTORICO_ESCOLAR</code>;</li>
-<li>o nível interno define arquivos, índices e páginas usados no armazenamento.</li>
+<li>a secretaria pode visualizar matrícula e histórico;</li>
+<li>o professor pode visualizar suas turmas e notas;</li>
+<li>o aluno pode visualizar seu próprio histórico;</li>
+<li>a coordenação pode visualizar indicadores do curso.</li>
 </ul>
-<p>Cada usuário acessa uma visão adequada à sua tarefa, sem precisar conhecer os detalhes físicos.</p>
+<p>As visões mostram somente os dados necessários para cada atividade.</p>
 </section>
 <section class="slide level2">
 
-<h3 id="independência-de-dados">Independência de dados</h3>
-<p>A independência de dados permite modificar um nível sem reescrever todos os demais.</p>
+<h3 id="compartilhamento-e-processamento-multiusuário">Compartilhamento e processamento multiusuário</h3>
+<p>Um SGBD permite que muitos usuários acessem o banco ao mesmo tempo.</p>
+<p>Para isso, ele controla:</p>
 <ul>
-<li><strong>Independência física:</strong> mudar arquivos, índices ou organização do armazenamento sem alterar o esquema conceitual.</li>
-<li><strong>Independência lógica:</strong> alterar o esquema conceitual sem modificar todas as visões e aplicações externas.</li>
+<li>quem pode ler ou modificar cada dado;</li>
+<li>operações simultâneas sobre os mesmos registros;</li>
+<li>conflitos entre atualizações;</li>
+<li>consistência do banco após cada operação.</li>
 </ul>
-</section>
-<section class="slide level2">
-
-<h3 id="exemplos">Exemplos:</h3>
-<p><strong>Exemplo de independência física:</strong></p>
-<p>O DBA pode criar um índice para acelerar uma consulta sem alterar as tabelas ou os programas que usam o banco:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href=""></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> idx_aluno_nome <span class="kw">ON</span> ALUNO (Nome);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Exemplo de independência lógica:</strong></p>
-<p>O esquema pode receber um novo atributo, como <code>Email</code>, enquanto uma visão já utilizada pela secretaria continua funcionando:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href=""></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> ALUNO <span class="kw">ADD</span> <span class="kw">COLUMN</span> Email <span class="dt">VARCHAR</span>(<span class="dv">120</span>);</span>
-<span id="cb2-2"><a href=""></a></span>
-<span id="cb2-3"><a href=""></a><span class="kw">CREATE</span> <span class="kw">VIEW</span> alunos_secretaria <span class="kw">AS</span></span>
-<span id="cb2-4"><a href=""></a><span class="kw">SELECT</span> Numero_aluno, Nome, Curso</span>
-<span id="cb2-5"><a href=""></a><span class="kw">FROM</span> ALUNO;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Essa propriedade facilita a manutenção e prolonga a vida útil das aplicações.</p>
-</section>
-<section class="slide level2">
-
-<h3 id="linguagens-do-sgbd">Linguagens do SGBD</h3>
-<p>O SGBD oferece linguagens ou interfaces para diferentes tarefas:</p>
-<ul>
-<li><strong>Definição de dados:</strong> cria e altera estruturas, tipos e restrições.</li>
-<li><strong>Manipulação de dados:</strong> insere, modifica e remove registros.</li>
-<li><strong>Consulta:</strong> recupera informações segundo critérios definidos.</li>
-<li><strong>Controle:</strong> gerencia privilégios, transações e operações administrativas.</li>
-</ul>
-<p>Na prática, SQL reúne grande parte dessas funções em uma linguagem padronizada.</p>
-</section>
-<section class="slide level2">
-
-<h3 id="usuários-de-um-banco-de-dados">Usuários de um banco de dados</h3>
-<ul>
-<li><strong>Administrador do banco de dados:</strong> gerencia segurança, desempenho, disponibilidade e recuperação.</li>
-<li><strong>Projetista de banco:</strong> define estruturas, relacionamentos e restrições.</li>
-<li><strong>Desenvolvedor de aplicações:</strong> cria programas e consultas que usam o SGBD.</li>
-<li><strong>Usuário final:</strong> consulta ou atualiza informações por meio de aplicações ou interfaces.</li>
-</ul>
-<p>A responsabilidade é compartilhada, mas cada papel possui objetivos diferentes.</p>
-</section>
-<section class="slide level2">
-
-<h3 id="serviços-oferecidos-pelo-sgbd">Serviços oferecidos pelo SGBD</h3>
-<p>Além de armazenar e consultar dados, o SGBD fornece:</p>
-<ul>
-<li>controle de acesso e autenticação;</li>
-<li>controle de concorrência;</li>
-<li>recuperação após falhas;</li>
-<li>manutenção de restrições de integridade;</li>
-<li>gerenciamento de transações;</li>
-<li>cópia de segurança e restauração;</li>
-<li>otimização de consultas.</li>
-</ul>
-<p>Esses serviços evitam que cada aplicação precise implementá-los de forma independente.</p>
+<p>O compartilhamento reduz a duplicação de dados e melhora a integração entre setores.</p>
 </section>
 <section class="slide level2 scrollable">
 
-<h3 id="fluxo-de-uma-consulta">Fluxo de uma consulta</h3>
+<h3 id="transações">Transações</h3>
+<p>Uma transação é um conjunto de operações que deve ser executado de forma logicamente correta.</p>
+<p>Exemplo: registrar a matrícula de um aluno pode envolver:</p>
 <ol type="1">
-<li>O usuário ou a aplicação solicita uma informação.</li>
-<li>O SGBD analisa a consulta e verifica permissões.</li>
-<li>O sistema escolhe uma estratégia de execução.</li>
-<li>O mecanismo de armazenamento localiza os dados.</li>
-<li>O SGBD retorna o resultado ao usuário.</li>
+<li>verificar se a turma existe;</li>
+<li>verificar se há vaga;</li>
+<li>inserir a matrícula;</li>
+<li>atualizar a quantidade de vagas.</li>
 </ol>
-<p>O usuário descreve <strong>o que</strong> deseja; o SGBD decide <strong>como</strong> obter o resultado.</p>
+<p>Se uma etapa falhar, o SGBD pode desfazer o conjunto para evitar um estado incompleto.</p>
+</section></section>
+<section>
+<section id="atores-em-cena" class="title-slide slide level1 center">
+<h1>Atores em cena</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="principais-atores">principais atores</h3>
+<p>Em pequenas organizações, uma mesma pessoa pode criar e usar o banco. Em organizações maiores, diferentes papéis participam do projeto e da operação.</p>
+<p>Os principais atores são:</p>
+<ul>
+<li>administradores de banco de dados;</li>
+<li>projetistas de banco de dados;</li>
+<li>usuários finais;</li>
+<li>analistas de sistemas e programadores de aplicações.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="administrador-de-banco-de-dados">Administrador de banco de dados</h3>
+<p>O administrador de banco de dados, ou <strong>DBA</strong>, supervisiona os recursos do banco.</p>
+<p>Suas responsabilidades incluem:</p>
+<ul>
+<li>definir usuários e privilégios;</li>
+<li>monitorar desempenho e disponibilidade;</li>
+<li>gerenciar backup e recuperação;</li>
+<li>acompanhar o uso do armazenamento;</li>
+<li>aplicar políticas de segurança;</li>
+<li>coordenar mudanças no banco.</li>
+</ul>
+<p>No banco UNIVERSIDADE, o DBA controla o acesso de secretaria, professores, alunos e coordenação.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="projetista-de-banco-de-dados">Projetista de banco de dados</h3>
+<p>O projetista transforma os requisitos do negócio em uma estrutura de dados.</p>
+<p>Ele define:</p>
+<ul>
+<li>entidades, atributos e relacionamentos;</li>
+<li>tabelas, chaves e domínios;</li>
+<li>restrições de integridade;</li>
+<li>visões adequadas aos grupos de usuários.</li>
+</ul>
+<p>Para o banco UNIVERSIDADE, o projetista decide como representar <code>ALUNO</code>, <code>DISCIPLINA</code>, <code>TURMA</code> e <code>HISTORICO_ESCOLAR</code>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="usuários-finais">Usuários finais</h3>
+<p>Usuários finais acessam o banco para consultar, inserir, atualizar ou gerar relatórios.</p>
+<p>Podem ser:</p>
+<ul>
+<li><strong>paramétricos:</strong> executam operações já preparadas, como registrar matrícula;</li>
+<li><strong>casuais:</strong> fazem consultas específicas, como um relatório gerencial;</li>
+<li><strong>especializados:</strong> usam ferramentas para análise de dados, criação de relatórios ou dashboards e modelagem estatística.</li>
+</ul>
+<p>Cada perfil deve receber apenas as permissões necessárias para sua função.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="analistas-e-programadores-de-aplicações">Analistas e programadores de aplicações</h3>
+<p>Esses profissionais:</p>
+<ul>
+<li>levantam requisitos com os usuários;</li>
+<li>projetam telas e fluxos de trabalho;</li>
+<li>escrevem programas que acessam o SGBD;</li>
+<li>criam consultas e relatórios;</li>
+<li>testam o comportamento da aplicação.</li>
+</ul>
+<p>Eles conectam as necessidades do usuário às estruturas e serviços oferecidos pelo banco.</p>
+</section></section>
+<section>
+<section id="trabalhadores-dos-bastidores" class="title-slide slide level1 center">
+<h1>Trabalhadores dos bastidores</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="infraestrutura">infraestrutura</h3>
+<p>Além de quem projeta e utiliza o banco, existem profissionais responsáveis pelo software e pela infraestrutura.</p>
+<p>Entre eles estão:</p>
+<ul>
+<li>projetistas e implementadores do SGBD;</li>
+<li>desenvolvedores de ferramentas;</li>
+<li>operadores e profissionais de manutenção;</li>
+<li>especialistas em armazenamento, redes e sistemas.</li>
+</ul>
+<p>Esses trabalhadores normalmente não aparecem na rotina dos usuários, mas sustentam o funcionamento do sistema.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="projetistas-e-implementadores-do-sgbd">Projetistas e implementadores do SGBD</h3>
+<p>São responsáveis por desenvolver os componentes internos do SGBD, como:</p>
+<ul>
+<li>gerenciador de armazenamento;</li>
+<li>processador e otimizador de consultas;</li>
+<li>controle de transações e concorrência;</li>
+<li>segurança e autorização;</li>
+<li>backup e recuperação;</li>
+<li>catálogo e gerenciamento de metadados.</li>
+</ul>
+<p>Seu trabalho permite que o SGBD ofereça uma interface confiável para as aplicações.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="desenvolvedores-de-ferramentas">Desenvolvedores de ferramentas</h3>
+<p>Criam ferramentas que facilitam o trabalho com o banco, como:</p>
+<ul>
+<li>editores de consultas;</li>
+<li>geradores de relatórios;</li>
+<li>ferramentas de modelagem;</li>
+<li>painéis de monitoramento;</li>
+<li>interfaces de administração;</li>
+<li>utilitários de migração e integração.</li>
+</ul>
+<p>Essas ferramentas tornam os recursos do SGBD mais acessíveis a diferentes perfis de usuário.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="operadores-e-profissionais-de-manutenção">Operadores e profissionais de manutenção</h3>
+<p>Garantem a operação cotidiana do ambiente:</p>
+<ul>
+<li>acompanham servidores e serviços;</li>
+<li>executam rotinas de cópia de segurança;</li>
+<li>verificam espaço e desempenho;</li>
+<li>aplicam atualizações;</li>
+<li>restauram serviços após falhas;</li>
+<li>documentam procedimentos operacionais.</li>
+</ul>
+<p>A disponibilidade do banco depende tanto do software quanto dessa rotina de manutenção.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="vantagens-de-usar-a-abordagem-de-sgbd">Vantagens de usar a abordagem de SGBD</h3>
+<p>O uso de um SGBD oferece benefícios que vão além do armazenamento:</p>
+<ul>
+<li>controle da redundância;</li>
+<li>restrição de acesso não autorizado;</li>
+<li>armazenamento persistente;</li>
+<li>estruturas de pesquisa eficientes;</li>
+<li>backup e recuperação;</li>
+<li>múltiplas interfaces;</li>
+<li>representação de relacionamentos complexos;</li>
+<li>imposição de integridade;</li>
+<li>suporte a dedução e ações automáticas.</li>
+</ul>
+</section></section>
+<section>
+<section id="redundância" class="title-slide slide level1 center">
+<h1>Redundância</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="controle-da-redundância">Controle da redundância</h3>
+<p>Quando cada setor mantém seus próprios arquivos, o mesmo dado pode ser armazenado várias vezes.</p>
+<p>Isso pode causar:</p>
+<ul>
+<li>desperdício de espaço;</li>
+<li>atualizações repetidas;</li>
+<li>valores divergentes;</li>
+<li>dificuldade para identificar qual cópia está correta.</li>
+</ul>
+<p>No banco UNIVERSIDADE, o nome do aluno deve ser mantido de forma centralizada, em vez de ser repetido com possibilidade de divergência no histórico.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="restrição-de-acesso-não-autorizado">Restrição de acesso não autorizado</h3>
+<p>O SGBD pode controlar o acesso por meio de:</p>
+<ul>
+<li>contas de usuário;</li>
+<li>senhas e autenticação;</li>
+<li>papéis e privilégios;</li>
+<li>visões restritas;</li>
+<li>registro de operações.</li>
+</ul>
+<p>Um aluno pode consultar seu histórico, enquanto a secretaria pode registrar matrículas e a coordenação pode consultar dados agregados.</p>
+</section></section>
+<section>
+<section id="armazenamento" class="title-slide slide level1 center">
+<h1>Armazenamento</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="armazenamento-persistente">Armazenamento persistente</h3>
+<p>Os dados permanecem disponíveis depois que uma aplicação é encerrada.</p>
+<p>Essa persistência permite que:</p>
+<ul>
+<li>uma matrícula seja consultada posteriormente;</li>
+<li>um histórico atravesse vários semestres;</li>
+<li>diferentes aplicações usem os mesmos dados;</li>
+<li>informações sejam compartilhadas ao longo do tempo.</li>
+</ul>
+<p>O SGBD gerencia a gravação e a recuperação dos dados em armazenamento não volátil.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="estruturas-de-armazenamento-e-pesquisa">Estruturas de armazenamento e pesquisa</h3>
+<p>Para encontrar dados com eficiência, o SGBD pode utilizar:</p>
+<ul>
+<li>índices;</li>
+<li>árvores de pesquisa;</li>
+<li>tabelas de hash;</li>
+<li>buffers e cache;</li>
+<li>estratégias de otimização de consultas.</li>
+</ul>
+<p>Assim, uma consulta por <code>Numero_aluno</code> não precisa examinar todos os registros de <code>ALUNO</code>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="índices">Índices</h3>
+<ul>
+<li><p>Um índice é uma estrutura auxiliar que relaciona um valor pesquisado à localização do registro correspondente.</p></li>
+<li><p>No banco UNIVERSIDADE, um índice sobre <code>Numero_aluno</code> permite localizar rapidamente um aluno sem percorrer toda a tabela <code>ALUNO</code>.</p></li>
+<li><p>O índice acelera consultas, mas ocupa espaço adicional e precisa ser atualizado quando os dados são inseridos, alterados ou removidos.</p></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href=""></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> idx_aluno_numero <span class="kw">ON</span> ALUNO (Numero_aluno);</span>
+<span id="cb1-2"><a href=""></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ALUNO <span class="kw">WHERE</span> Numero_aluno <span class="op">=</span> <span class="dv">10025</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+<h3 id="árvores-de-pesquisa">Árvores de pesquisa</h3>
+<ul>
+<li><p>Árvores de pesquisa organizam os valores em níveis, facilitando a localização, a inserção e a remoção de registros.</p></li>
+<li><p>Elas também são úteis para consultas por intervalo, como encontrar alunos com <code>Numero_aluno</code> entre dois valores.</p></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href=""></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> idx_aluno_numero_btree</span>
+<span id="cb2-2"><a href=""></a>  <span class="kw">ON</span> ALUNO <span class="kw">USING</span> BTREE (Numero_aluno);</span>
+<span id="cb2-3"><a href=""></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ALUNO</span>
+<span id="cb2-4"><a href=""></a><span class="kw">WHERE</span> Numero_aluno <span class="kw">BETWEEN</span> <span class="dv">10000</span> <span class="kw">AND</span> <span class="dv">10099</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+<h3 id="tabelas-de-hash">Tabelas de hash</h3>
+<ul>
+<li><p>Uma tabela de hash calcula uma posição a partir do valor pesquisado e usa essa posição para localizar o registro.</p></li>
+<li><p>Essa estrutura pode ser muito eficiente para buscas por igualdade, como:</p></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb3-1"><a href=""></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ALUNO <span class="kw">WHERE</span> Numero_aluno <span class="op">=</span> <span class="dv">10025</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Por outro lado, tabelas de hash não são adequadas para ordenar valores ou pesquisar intervalos.</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb4-1"><a href=""></a><span class="kw">CREATE</span> <span class="kw">INDEX</span> idx_aluno_numero_hash</span>
+<span id="cb4-2"><a href=""></a>  <span class="kw">ON</span> ALUNO <span class="kw">USING</span> <span class="kw">HASH</span> (Numero_aluno);</span>
+<span id="cb4-3"><a href=""></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ALUNO <span class="kw">WHERE</span> Numero_aluno <span class="op">=</span> <span class="dv">10025</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+<h3 id="buffers-e-cache">Buffers e cache</h3>
+<ul>
+<li><p>Buffers são áreas da memória usadas para manter temporariamente páginas de dados que estão sendo lidas ou alteradas.</p></li>
+<li><p>Quando uma informação solicitada já está no buffer ou no cache, o SGBD pode reutilizá-la sem acessar o disco novamente.</p></li>
+<li><p>Isso reduz o tempo de resposta de consultas repetidas e melhora o desempenho das operações mais frequentes.</p></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href=""></a><span class="kw">EXPLAIN</span> (<span class="kw">ANALYZE</span>, BUFFERS)</span>
+<span id="cb5-2"><a href=""></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ALUNO <span class="kw">WHERE</span> Numero_aluno <span class="op">=</span> <span class="dv">10025</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2">
+
+<h3 id="otimização-de-consultas">Otimização de consultas</h3>
+<ul>
+<li><p>O otimizador de consultas analisa uma instrução SQL e escolhe uma estratégia para executá-la.</p></li>
+<li><p>Entre as possibilidades, ele pode decidir:</p></li>
+<li><p>usar um índice;</p></li>
+<li><p>combinar tabelas em uma determinada ordem;</p></li>
+<li><p>filtrar os registros antes de realizar uma junção;</p></li>
+<li><p>escolher entre diferentes algoritmos de ordenação ou agrupamento.</p></li>
+<li><p>Assim, duas consultas que produzem o mesmo resultado podem ter custos muito diferentes para o SGBD.</p></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource sql number-lines code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href=""></a><span class="kw">EXPLAIN</span></span>
+<span id="cb6-2"><a href=""></a><span class="kw">SELECT</span> a.Nome, h.Nota</span>
+<span id="cb6-3"><a href=""></a><span class="kw">FROM</span> ALUNO <span class="kw">AS</span> a</span>
+<span id="cb6-4"><a href=""></a><span class="kw">JOIN</span> HISTORICO_ESCOLAR <span class="kw">AS</span> h</span>
+<span id="cb6-5"><a href=""></a>  <span class="kw">ON</span> h.Numero_aluno <span class="op">=</span> a.Numero_aluno</span>
+<span id="cb6-6"><a href=""></a><span class="kw">WHERE</span> a.Numero_aluno <span class="op">=</span> <span class="dv">10025</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section class="slide level2 scrollable">
+
+<h3 id="como-as-estruturas-trabalham-juntas">Como as estruturas trabalham juntas</h3>
+<p>Uma consulta por <code>Numero_aluno</code> pode seguir este caminho:</p>
+<ol type="1">
+<li>o otimizador escolhe um índice adequado;</li>
+<li>o SGBD procura a página correspondente na árvore ou na tabela de hash;</li>
+<li>se a página estiver no cache, ela é reutilizada na memória;</li>
+<li>caso contrário, o buffer solicita a página ao armazenamento;</li>
+<li>o registro encontrado é devolvido à aplicação.</li>
+</ol>
+<p>O resultado é uma pesquisa eficiente sem examinar todos os registros de <code>ALUNO</code>.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="backup-e-recuperação">Backup e recuperação</h3>
+<p>Falhas de hardware, software ou energia podem interromper uma operação.</p>
+<p>O SGBD oferece mecanismos para:</p>
+<ul>
+<li>manter cópias de segurança;</li>
+<li>registrar alterações;</li>
+<li>desfazer operações incompletas;</li>
+<li>restaurar o banco a um estado consistente.</li>
+</ul>
+<p>No banco UNIVERSIDADE, esses recursos protegem históricos, matrículas e notas contra perda ou corrupção.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="múltiplas-interfaces-de-usuário">Múltiplas interfaces de usuário</h3>
+<p>O mesmo banco pode ser acessado por:</p>
+<ul>
+<li>aplicações web;</li>
+<li>sistemas de secretaria;</li>
+<li>aplicativos móveis;</li>
+<li>consultas SQL;</li>
+<li>painéis gerenciais;</li>
+<li>rotinas automatizadas.</li>
+</ul>
+<p>As interfaces mudam, mas o SGBD mantém uma fonte comum e controlada de dados.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="relacionamentos-complexos-e-integridade">Relacionamentos complexos e integridade</h3>
+<p>Um banco pode representar relações entre muitos tipos de dados.</p>
+<p>No exemplo da universidade:</p>
+<ul>
+<li>alunos se matriculam em turmas;</li>
+<li>turmas pertencem a disciplinas;</li>
+<li>disciplinas podem exigir pré-requisitos;</li>
+<li>históricos registram notas.</li>
+</ul>
+<p>O SGBD também impõe regras para evitar referências inexistentes, chaves duplicadas e valores inválidos.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="dedução-e-ações-usando-regras">Dedução e ações usando regras</h3>
+<p>Alguns sistemas permitem definir regras para derivar informações ou disparar ações.</p>
+<p>Exemplos:</p>
+<ul>
+<li>calcular automaticamente a situação acadêmica;</li>
+<li>sinalizar aluno com pré-requisito pendente;</li>
+<li>atualizar um indicador após o lançamento de uma nota;</li>
+<li>gerar um alerta quando uma condição for atingida.</li>
+</ul>
+<p>Esses recursos ampliam o papel do banco como parte ativa do sistema de informação.</p>
+</section>
+<section class="slide level2">
+
+<h3 id="implicações-adicionais">Implicações adicionais</h3>
+<p>A abordagem de SGBD também favorece:</p>
+<ul>
+<li>padronização de nomes, formatos e procedimentos;</li>
+<li>flexibilidade para novas aplicações;</li>
+<li>redução do tempo de desenvolvimento;</li>
+<li>disponibilidade de informações atualizadas;</li>
+<li>redução de custos pela integração de dados e sistemas.</li>
+</ul>
+<p>Essas vantagens aparecem especialmente quando muitos setores dependem das mesmas informações.</p>
 </section>
 <section class="slide level2 scrollable">
 
 <h3 id="atividade">Atividade</h3>
 <p>Considere o banco UNIVERSIDADE e responda:</p>
 <ol type="1">
-<li>Qual é um exemplo de esquema e qual é um exemplo de instância?</li>
-<li>Que informações poderiam aparecer no catálogo do SGBD?</li>
-<li>Qual mudança representa independência física: criar um índice ou alterar o nome de um atributo?</li>
-<li>Que visão seria adequada para a secretaria e qual seria adequada para um professor?</li>
+<li>Que metadados o catálogo deveria armazenar para <code>ALUNO</code>?</li>
+<li>Qual visão seria adequada para um aluno e qual seria adequada para a secretaria?</li>
+<li>Dê um exemplo de redundância e explique como controlá-la.</li>
+<li>Qual profissional seria responsável por definir as permissões de acesso?</li>
+<li>Por que backup e recuperação são importantes para o histórico escolar?</li>
 </ol>
 <div class="quarto-auto-generated-content">
 <p><img src="Marca_UEPB.png" class="slide-logo"></p>
@@ -597,19 +890,19 @@ Professor: Pedro M. Almeida-Junior
   </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="3_conceitos_arquitetura_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="2.1_caracteristicas_banco_dados_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>
@@ -803,6 +1096,82 @@ Professor: Pedro M. Almeida-Junior
         ]
       });
     </script>
+    
+
+    <script>
+
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
+      // slide changes (different for each slide format).
+
+      (function () {
+
+        // dispatch for htmlwidgets
+
+        function fireSlideEnter() {
+
+          const event = window.document.createEvent("Event");
+
+          event.initEvent("slideenter", true, true);
+
+          window.document.dispatchEvent(event);
+
+        }
+
+    
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          fireSlideEnter();
+
+    
+
+          // dispatch for shiny
+
+          if (window.jQuery) {
+
+            if (previousSlide) {
+
+              window.jQuery(previousSlide).trigger("hidden");
+
+            }
+
+            if (currentSlide) {
+
+              window.jQuery(currentSlide).trigger("shown");
+
+            }
+
+          }
+
+        }
+
+    
+
+        // hookup for slidy
+
+        if (window.w3c_slidy) {
+
+          window.w3c_slidy.add_observer(function (slide_num) {
+
+            // slide_num starts at position 1
+
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
+          });
+
+        }
+
+    
+
+      })();
+
+    </script>
+
+    
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

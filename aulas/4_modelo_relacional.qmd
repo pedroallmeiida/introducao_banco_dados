@@ -94,14 +94,47 @@ O esquema define a estrutura; as tuplas representam os dados armazenados nessa e
 
 ### Chaves
 
-Uma chave identifica uma tupla de maneira única.
+Para relacionar as diferentes tabelas em um banco de dados, vamos utilizar o conceito de chaves. 
 
-- **Superchave:** atributo ou conjunto de atributos que identifica uma tupla.
-- **Chave candidata:** superchave mínima.
-- **Chave primária:** chave candidata escolhida para identificar os registros.
-- **Chave estrangeira:** atributo que referencia a chave de outra relação.
+- **Chave:** é um identificador único de uma tabela.
+- **Chave primária:** identifica cada registro (linha) da tabela unicamente.
+- **Chave estrangeira:** chave primária de outra tabela presente na tabela em questão. 
 
 As chaves expressam identidade e conexão entre os dados.
+
+---
+
+#### Exemplo:
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+**ALUNO**
+
+| codigo_aluno (PK) | Nome | codigo_curso (FK) |
+|---|---|---|
+| 101 | Ana Silva | 10 |
+| 102 | Bruno Lima | 20 |
+
+:::
+
+::: {.column width="50%"}
+
+**CURSO**
+
+| codigo_curso (PK) | Nome_curso |
+|---|---|
+| 10 | Estatística |
+| 20 | Estatística e Ciência de Dados |
+
+:::
+
+:::
+
+`codigo_aluno` é a **chave primária (pk)** de `ALUNO`: identifica cada aluno de forma única.
+
+`codigo_curso` é uma **chave estrangeira (fk)** em `ALUNO`: seus valores devem existir na chave primária `codigo_curso` de `CURSO`.
 
 ---
 
@@ -284,7 +317,6 @@ ALUNO junção HISTORICO junção TURMA
 Essa combinação permite relacionar o nome do aluno à turma cursada e à nota obtida.
 
 ---
----
 
 ### Atividade
 
@@ -294,4 +326,3 @@ Considere as relações `ALUNO`, `DISCIPLINA`, `TURMA` e `HISTORICO`.
 2. Identifique duas chaves estrangeiras.
 3. Dê um exemplo de violação de domínio.
 4. Explique por que uma disciplina não deve ser excluída sem verificar suas turmas.
-5. Descreva uma junção que retorne nome do aluno, disciplina e nota.
