@@ -12,7 +12,6 @@ data_matricula date
 
 SELECT * FROM aluno;
 
-
 -- visualizar um campo especifico 
 SELECT id_aluno, nome_aluno, data_matricula
 FROM aluno;
