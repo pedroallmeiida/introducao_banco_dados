@@ -1,0 +1,236 @@
+---
+title: "Controle de integridade em bancos de dados"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-tools: true
+---
+
+# Integridade de banco de dados
+
+**Integridade de banco de dados** é o conjunto de regras que mantém os dados
+corretos, consistentes e válidos durante todo o seu ciclo de vida. Essas regras
+impedem, por exemplo, que:
+
+- dois registros recebam o mesmo identificador;
+- um histórico escolar seja associado a um aluno que não existe;
+- uma nota fique fora do intervalo permitido;
+- um campo obrigatório seja gravado vazio;
+- a mesma disciplina seja registrada duas vezes para o mesmo aluno.
+
+As regras podem ser verificadas pela aplicação, mas devem ser definidas
+também no próprio banco de dados. Assim, qualquer aplicação, usuário ou
+processo que acessar o banco estará sujeito às mesmas validações.
+
+# Tipos de integridade
+
+| Tipo | Finalidade | Restrições mais utilizadas |
+|:--|:--|:--|
+| **De entidade** | Identificar cada registro de forma única e não nula. | `PRIMARY KEY` |
+| **Referencial** | Manter válidos os relacionamentos entre tabelas. | `FOREIGN KEY` |
+| **De domínio** | Limitar os valores aceitos por uma coluna. | Tipo de dado, `NOT NULL`, `CHECK` |
+| **De unicidade** | Impedir duplicidade em uma coluna ou combinação de colunas. | `UNIQUE` |
+| **De negócio** | Representar regras específicas do sistema. | Combinação de restrições e regras da aplicação |
+
+## Integridade de entidade: `PRIMARY KEY`
+
+A chave primária identifica cada linha de uma tabela. Ela deve ser única e
+nunca pode ter valor nulo. No exemplo, `id_aluno` distingue um aluno de todos
+os demais:
+
+```{.sql}
+CREATE TABLE aluno (
+    id_aluno INT PRIMARY KEY,
+    nome_aluno VARCHAR(50) NOT NULL,
+    data_matricula DATE NOT NULL
+);
+```
+
+
+
+## Integridade de domínio
+
+O domínio define quais valores são aceitáveis para uma coluna. O tipo de dado
+limita o formato geral, enquanto `NOT NULL` e `CHECK` tornam a regra mais
+específica:
+
+```{.sql}
+CREATE TABLE disciplina (
+    cod_disciplina INT PRIMARY KEY,
+    nome_disciplina VARCHAR(100) NOT NULL,
+    creditos INT NOT NULL CHECK (creditos > 0),
+    departamento VARCHAR(50) NOT NULL
+);
+```
+
+Nesse caso:
+
+- `INT` exige um valor inteiro em `cod_disciplina` e `creditos`;
+- `VARCHAR(100)` limita o tamanho do texto de `nome_disciplina`;
+- `NOT NULL` exige o preenchimento dos campos indicados;
+- `CHECK (creditos > 0)` impede disciplinas sem créditos ou com créditos
+  negativos.
+
+> **Atenção:** `NULL` não significa zero, texto vazio ou falso. Ele representa
+> a ausência de um valor conhecido. Use `NOT NULL` quando a informação for
+> obrigatória.
+
+## Integridade referencial: `FOREIGN KEY`
+
+Uma chave estrangeira relaciona uma tabela filha a uma tabela pai. O valor
+informado na tabela filha precisa existir na chave referenciada da tabela pai.
+
+```{.sql}
+CREATE TABLE historico_escolar (
+    id_historico INT AUTO_INCREMENT PRIMARY KEY,
+    id_aluno INT NOT NULL,
+    cod_disciplina INT NOT NULL,
+    nota DECIMAL(4,2) CHECK (nota BETWEEN 0 AND 10),
+    frequencia DECIMAL(5,2) CHECK (frequencia BETWEEN 0 AND 100),
+
+    -- Nomeia a restrição e relaciona o aluno do histórico à tabela aluno.
+    CONSTRAINT fk_historico_aluno
+        FOREIGN KEY (id_aluno)
+        REFERENCES aluno(id_aluno),
+
+    -- Nomeia a restrição e relaciona a disciplina do histórico à tabela disciplina.
+    CONSTRAINT fk_historico_disciplina
+        FOREIGN KEY (cod_disciplina)
+        REFERENCES disciplina(cod_disciplina)
+);
+```
+
+Cada cláusula `CONSTRAINT` cria uma restrição com um nome próprio. Nesse
+exemplo, `fk_historico_aluno` e `fk_historico_disciplina` são os nomes das
+restrições de chave estrangeira. A expressão `FOREIGN KEY` indica a coluna da
+tabela `historico_escolar` que participa do relacionamento, enquanto
+`REFERENCES` informa a tabela e a coluna que devem conter o valor
+correspondente. Dessa forma, `id_aluno` só pode receber um identificador
+existente em `aluno(id_aluno)`, e `cod_disciplina` só pode receber um código
+existente em `disciplina(cod_disciplina)`.
+
+Assim, não é possível inserir no histórico um `id_aluno` ou
+`cod_disciplina` que ainda não esteja cadastrado. A ordem de criação também é
+importante: `aluno` e `disciplina` devem existir antes de
+`historico_escolar`.
+
+## Integridade de unicidade: `UNIQUE`
+
+`UNIQUE` impede que uma combinação de valores se repita. No histórico, a
+combinação do aluno com a disciplina deve ser única:
+
+```{.sql}
+ALTER TABLE historico_escolar
+ADD CONSTRAINT uq_aluno_disciplina
+UNIQUE (id_aluno, cod_disciplina);
+```
+
+Essa restrição permite que um aluno curse várias disciplinas e que uma
+disciplina tenha vários alunos, mas impede o lançamento duplicado da mesma
+disciplina para o mesmo aluno.
+
+
+## Inserções válidas
+
+As linhas abaixo respeitam todas as restrições definidas:
+
+```{.sql}
+INSERT INTO aluno (
+    id_aluno, nome_aluno, idade_aluno, renda_familiar, data_matricula
+)
+VALUES (198733, 'Pedro', 30, 3000.00, '2026-02-01');
+
+INSERT INTO disciplina (
+    cod_disciplina, nome_disciplina, creditos, departamento
+)
+VALUES (101, 'Banco de Dados', 4, 'Computação');
+
+INSERT INTO historico_escolar (
+    id_aluno, cod_disciplina, nota, frequencia
+)
+VALUES (198733, 101, 8.50, 92.00);
+```
+
+## Operações que devem ser rejeitadas
+
+Cada operação abaixo viola uma regra diferente. Os comandos são apresentados
+como exemplos de teste e não devem ser executados depois do script de carga
+válida sem tratamento do erro.
+
+```{.sql}
+-- PRIMARY KEY: o identificador 198733 já existe.
+INSERT INTO aluno (id_aluno, nome_aluno, data_matricula)
+VALUES (198733, 'Outro aluno', '2026-02-02');
+
+-- CHECK: a nota deve estar entre 0 e 10.
+INSERT INTO historico_escolar (id_aluno, cod_disciplina, nota, frequencia)
+VALUES (198733, 101, 12.00, 90.00);
+
+-- FOREIGN KEY: o aluno 999999 não está cadastrado.
+INSERT INTO historico_escolar (id_aluno, cod_disciplina, nota, frequencia)
+VALUES (999999, 101, 7.00, 80.00);
+
+-- UNIQUE: o par aluno-disciplina já foi lançado.
+INSERT INTO historico_escolar (id_aluno, cod_disciplina, nota, frequencia)
+VALUES (198733, 101, 9.00, 95.00);
+
+-- NOT NULL: nome_aluno é obrigatório.
+INSERT INTO aluno (id_aluno, nome_aluno, data_matricula)
+VALUES (200001, NULL, '2026-02-03');
+```
+
+# Atualização e exclusão com relacionamentos
+
+Uma alteração ou exclusão também precisa preservar a integridade referencial. Por padrão, o banco pode impedir a exclusão de um aluno que
+possua registros no histórico:
+
+```{.sql}
+-- Pode ser rejeitado enquanto houver histórico para o aluno.
+DELETE FROM aluno
+WHERE id_aluno = 198733;
+```
+
+Uma estratégia segura é excluir primeiro os registros dependentes, quando essa
+for a regra do sistema, ou configurar explicitamente uma ação na chave
+estrangeira, como `ON DELETE CASCADE`. Essa decisão deve ser tomada com
+cuidado, pois `CASCADE` exclui automaticamente os registros relacionados.
+
+```{.sql}
+CREATE TABLE historico_escolar (
+    id_historico INT AUTO_INCREMENT PRIMARY KEY,
+    id_aluno INT NOT NULL,
+    cod_disciplina INT NOT NULL,
+    CONSTRAINT fk_historico_aluno
+        FOREIGN KEY (id_aluno)
+        REFERENCES aluno(id_aluno)
+        ON DELETE CASCADE
+);
+```
+
+> A ação de cascata não é obrigatória. Use-a somente quando a exclusão dos
+> dados dependentes fizer sentido para a regra de negócio e estiver documentada.
+
+# Boas práticas
+
+1. Defina as restrições no banco, e não apenas na interface da aplicação.
+2. Dê nomes claros às restrições, como `fk_historico_aluno`.
+3. Use o tipo de dado mais adequado ao domínio do atributo.
+4. Prefira `NOT NULL` quando não existir um significado válido para a ausência
+   do valor.
+5. Valide intervalos e combinações com `CHECK` e `UNIQUE`.
+6. Analise o impacto de `ON DELETE CASCADE` antes de adotá-lo.
+7. Teste operações válidas e inválidas para confirmar que as regras estão funcionando.
+
+# Atividade
+
+Considere uma tabela `turma` com os atributos `id_turma`,
+`cod_disciplina`, `semestre` e `sala`.
+
+1. Crie a tabela com uma chave primária para `id_turma`.
+2. Faça `cod_disciplina` referenciar `disciplina(cod_disciplina)`.
+3. Exija o preenchimento de `semestre` e `sala`.
+4. Impeça que uma disciplina seja oferecida duas vezes no mesmo semestre.
+5. Escreva um `INSERT` válido e dois `INSERT`s que devem ser rejeitados, justificando a restrição violada.

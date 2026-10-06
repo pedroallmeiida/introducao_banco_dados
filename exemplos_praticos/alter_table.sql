@@ -1,7 +1,7 @@
 
 -- alterarando a tabela 
 
--- add coluna
+-- add colunas na tabela aluno
 ALTER TABLE aluno
 ADD COLUMN (id_curso int, cep int, enredeco varchar(200));
 

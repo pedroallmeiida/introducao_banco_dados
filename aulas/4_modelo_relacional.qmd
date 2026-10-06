@@ -218,9 +218,9 @@ O SGBD deve impedir situações como:
 
 As três operações básicas são:
 
-- **Inserção:** acrescenta uma nova tupla.
-- **Exclusão:** remove uma tupla existente.
-- **Alteração:** modifica valores de uma tupla.
+- **Inserção (INSERT INTO):** acrescenta uma nova tupla.
+- **Exclusão (DELETE):** remove uma tupla existente.
+- **Alteração (ALTER):** modifica valores de uma tupla.
 
 Cada operação deve respeitar domínios, chaves e relacionamentos.
 
