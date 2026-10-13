@@ -1,0 +1,146 @@
+---
+title: "Projeto Prático: modelagem estrutural de banco de dados"
+subtitle: "Modelagem e criação de tabelas e relacionamentos no MySQL a partir de dados abertos"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: false
+    theme: cosmo
+---
+
+**DISCIPLINA: BANCO DE DADOS**
+
+::: {.callout-note}
+## Proposta
+
+Selecione um dos seis temas deste documento e
+utilize a estrutura dos dados públicos para projetar e criar um banco de dados
+relacional no MySQL. Nesta etapa, o foco é exclusivamente estrutural: identificar
+entidades, definir tabelas e campos e representar seus relacionamentos com
+chaves e restrições.
+:::
+
+## 1. Objetivos de aprendizagem
+
+- Investigar uma fonte de dados e descrever sua origem e estrutura relevante para a modelagem.
+- Identificar entidades, atributos e relacionamentos a partir dos dados escolhidos.
+- Elaborar um diagrama entidade-relacionamento
+- Definir chaves primárias e estrangeiras, restrições e tipos de dados apropriados.
+- Criar no MySQL as tabelas e os relacionamentos previstos no modelo.
+
+## 2. Temas e fontes de dados
+
+Escolha **um** dos temas abaixo. Os conjuntos de dados podem ser extensos; é
+permitido definir um recorte documentado (por período, região, instituição ou
+conjunto de arquivos) para manter o escopo da modelagem viável. O recorte deve
+conter dados suficientes para identificar as entidades e os relacionamentos
+propostos.
+
+### 1. E-commerce — Olist
+
+**Fonte:** [Brazilian E-Commerce Public Dataset by Olist (Kaggle)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
+
+**Contexto:** pedidos de comércio eletrônico, clientes, itens, pagamentos,
+avaliações, vendedores e informações logísticas.
+
+**Entidades candidatas:** pedido, cliente, item do pedido, produto, vendedor,
+pagamento, avaliação e localização. Verifique as chaves e a granularidade de
+cada arquivo antes de relacioná-los.
+
+### 2. Educação Superior — INEP
+
+**Fonte:** [Microdados do Censo da Educação Superior (INEP)](https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-da-educacao-superior)
+
+**Contexto:** informações estatísticas sobre instituições, cursos, docentes e
+estudantes do ensino superior brasileiro, conforme os arquivos e o ano
+selecionados.
+
+**Entidades candidatas:** instituição, curso, local de oferta, área, modalidade e
+indicadores anuais. Identifique cuidadosamente códigos, dicionários e mudanças
+de estrutura entre edições; não presuma que campos de anos diferentes sejam
+diretamente comparáveis.
+
+### 3. Saúde Pública — DATASUS/CNES
+
+**Fonte:** [Arquivos de bases de dados do CNES](https://cnes.datasus.gov.br/pages/downloads/arquivosBaseDados.jsp)
+
+**Contexto:** registros do Cadastro Nacional de Estabelecimentos de Saúde,
+incluindo estabelecimentos e informações cadastrais disponíveis nos arquivos
+escolhidos.
+
+**Entidades candidatas:** estabelecimento, município, tipo de unidade, serviço e
+registros de recursos. Consulte os arquivos auxiliares oficiais;
+preserve códigos geográficos e explique o período de referência. Dados
+cadastrais devem ser representados conforme o significado documentado na fonte.
+
+### 4. Eleições Brasileiras — TSE
+
+**Fonte:** [Portal de Dados Abertos do TSE](https://dadosabertos.tse.jus.br/)
+
+**Contexto:** dados eleitorais abertos, que podem incluir candidaturas, partidos,
+resultados de votação e informações de seção, conforme eleição e arquivo
+selecionados.
+
+**Entidades candidatas:** eleição, cargo, candidato, partido, município,
+zona/seção e resultado. Registre eleição, turno e nível geográfico no esquema
+para evitar misturar resultados de escopos diferentes. Use os dicionários e
+leiautes do TSE.
+
+### 5. Mobilidade Urbana — NYC Taxi
+
+**Fonte:** [TLC Trip Record Data (New York City)](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
+
+**Contexto:** registros de viagens de táxi e veículos de aluguel, com datas,
+zonas, distâncias e valores, de acordo com o tipo de arquivo e período.
+
+**Entidades candidatas:** viagem, zona de embarque, zona de desembarque e tipo
+de serviço. O volume pode ser grande: selecione um mês ou período e registre o
+recorte utilizado como referência para a modelagem.
+
+
+## 3. Etapas obrigatórias
+
+1. **Definição do recorte:** escolher o tema, a fonte, o período/região e os
+   arquivos que servirão de base para o modelo.
+2. **Inspeção da fonte:** consultar os arquivos, dicionários e leiautes
+   disponíveis; identificar campos, códigos e granularidade relevantes.
+3. **Identificação estrutural:** levantar as entidades, seus atributos e os
+   relacionamentos sugeridos pela fonte.
+4. **Modelagem conceitual:** elaborar o diagrama entidade-relacionamento,
+   indicando entidades, atributos, cardinalidades e identificadores.
+5. **Implementação no MySQL:** criar o banco e as tabelas utilizando comandos
+   SQL (DDL), incluindo os relacionamentos e as restrições definidos.
+6. **Validação estrutural:** executar os scripts no MySQL e verificar se as
+   tabelas, chaves e relacionamentos foram criados corretamente. 
+7. **Inserir os dados:** Inserir os dados nas tabelas criadas.
+
+## 4. Requisitos técnicos
+
+- A implementação deve ser feita em **MySQL**.
+- O esquema deve conter as tabelas necessárias para representar as entidades
+  escolhidas e seus relacionamentos.
+- Defina uma chave primária para cada tabela e chaves estrangeiras para
+  representar os relacionamentos aplicáveis.
+- Escolha tipos de dados compatíveis com o significado e o formato dos atributos.
+- Utilize restrições pertinentes, como `NOT NULL` e `UNIQUE`, quando
+  fizerem sentido para os dados e para o modelo.
+- Entregue scripts SQL reproduzíveis para criação do banco, das tabelas e das
+  restrições. 
+
+## 5. Entregáveis
+
+1. **Documento do projeto** em PDF ou formato definido pelo docente, contendo:
+   tema, integrantes, objetivo, fonte e data de acesso, recorte escolhido,
+   entidades identificadas e justificativas das principais decisões estruturais.
+2. **Diagrama entidade-relacionamento** legível, com entidades, atributos,
+   identificadores e cardinalidades.
+3. **Esquema relacional** correspondente, indicando tabelas, campos, tipos de
+   dados, chaves primárias e chaves estrangeiras.
+4. **Scripts SQL (DDL)** para criar o banco de dados, as tabelas, os
+   relacionamentos e as restrições no MySQL.
+5. **Demonstração estrutural e da carga dos dados:** execução dos scripts e
+   apresentação das tabelas, dos relacionamentos e dos dados carregados no MySQL.
+
+

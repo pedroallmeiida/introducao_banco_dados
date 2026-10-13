@@ -8,7 +8,7 @@ CREATE TABLE historico_escolar (
     nota DECIMAL(4,2),
     situacao VARCHAR(20),
 
-    FOREIGN KEY (id_aluno) 
+    FOREIGN KEY (id_aluno)  
         REFERENCES aluno(id_aluno),
 
     FOREIGN KEY (cod_disciplina) 
@@ -154,6 +154,7 @@ VALUES
 (134, 20231050, 58374, '2023.2', 8.40, 'Aprovado'),
 (135, 20231050, 58415, '2024.1', 8.90, 'Aprovado');
 
-
-
 SELECT * FROM historico_escolar;
+
+
+

@@ -1,6 +1,6 @@
 
 CREATE TABLE aluno (
-id_aluno int primary key comment 'codigo do aluno',
+id_aluno int primary key comment 'codigo do aluno (matricula)',
 nome_aluno varchar(50) comment 'nome do aluno',
 idade_aluno int comment 'idade do aluno',
 renda_familiar float comment 'renda familiar do aluno',
