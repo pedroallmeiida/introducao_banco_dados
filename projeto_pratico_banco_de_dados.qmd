@@ -131,8 +131,8 @@ recorte utilizado como referência para a modelagem.
 
 ## 5. Entregáveis
 
-1. **Documento do projeto** em PDF ou formato definido pelo docente, contendo:
-   tema, integrantes, objetivo, fonte e data de acesso, recorte escolhido,
+1. **Documento do projeto** em PDF ou Markdown, contendo:
+   tema, objetivo, fonte e data de acesso, recorte escolhido,
    entidades identificadas e justificativas das principais decisões estruturais.
 2. **Diagrama entidade-relacionamento** legível, com entidades, atributos,
    identificadores e cardinalidades.

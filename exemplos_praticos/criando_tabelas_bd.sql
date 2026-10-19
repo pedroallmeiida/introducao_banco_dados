@@ -57,4 +57,5 @@ SELECT * FROM aluno;
 -- DROP TABLE aluno;
 
 -- consultar tabela criada pelo csv 
-SELECT * FROM aluno_csv
+SELECT * FROM taxi_zone_lookup;
+
