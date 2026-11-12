@@ -1,0 +1,226 @@
+---
+title: "Comandos básicos do SQL"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Agora que sabemos criar, incluir, alterar e excluir informações nas tabelas, veja como podemos realizar pesquisas, ou seja, extrair informações do banco de dados. O comando para este fim é o SELECT.
+
+# Consultas com `SELECT`
+
+O comando `SELECT` consulta dados, mas normalmente é classificado como DQL (*Data Query Language*), e não como DML. Ele aparece junto dos exemplos de manipulação porque permite verificar o resultado das operações realizadas.
+
+## Sintaxe do comando SELECT
+
+```         
+SELECT [Distinct ou ALL] {* ou coluna1, coluna2, ...} 
+FROM nome_tabela;
+```
+
+## Consultar todos os dados
+
+``` sql
+SELECT *
+FROM aluno;
+```
+
+## Consultar colunas específicas
+
+``` sql
+SELECT id_aluno, nome_aluno
+FROM aluno;
+```
+
+## Select Distinct
+
+``` sql
+SELECT DISTINCT id_aluno, nome_aluno
+FROM aluno;
+```
+
+Portanto, usamos o SELECT para extrair as informações das tabelas criadas no nosso database.
+
+## Ordenar a tabela
+
+Geralmente temos o interesse em ordenar o nosso dataset de acordo com alguma variável em específico. Nesse caso, o comando para fazer essa operação é o `ORDER BY`.
+
+``` sql
+SELECT *
+FROM aluno
+ORDER BY renda_familiar;
+```
+
+Tambem podemos especificar se a ordenação será na ordem crescente (`ASC`) ou decrescente (`DESC`)
+
+``` sql
+SELECT *
+FROM aluno
+ORDER BY renda_familiar ASC; 
+```
+
+Podemos também ordernar por mais de uma coluna, o gerenciador primeiro ordenará pela primeira coluna, em seguida pela segunda e assim por diante. Por exemplo, se você quisesse fazer a mesma colsulta ordenando peala renda_familiar e idade:
+
+``` sql
+SELECT *
+FROM aluno
+ORDER BY renda_familiar, idade; 
+```
+
+## Filtrar registros
+
+A cláusula `WHERE` permite retornar apenas os registros que atendem a uma condição. Neste exemplo, são selecionados os alunos cuja renda familiar é maior que 2000.
+
+``` sql
+SELECT *
+FROM aluno
+WHERE renda_familiar > 2000;
+```
+
+## Operadores relacionais
+
+Os operadores relacionais definem condições de comparação, como igualdade, diferença e relações de ordem. Eles são colocados entre os valores comparados.
+
+| Operador | Significado      | Exemplo       |
+|----------|------------------|---------------|
+| `=`      | Igual a          | `idade = 18`  |
+| `<>`     | Diferente de     | `idade <> 18` |
+| `>`      | Maior que        | `idade > 18`  |
+| `<`      | Menor que        | `idade < 18`  |
+| `>=`     | Maior ou igual a | `idade >= 18` |
+| `<=`     | Menor ou igual a | `idade <= 18` |
+
+## Operadores lógicos
+
+Os operadores lógicos combinam ou negam condições em uma consulta SQL.
+
+| Operador | Significado                                            | Exemplo                                 |
+|------------------------|------------------------|------------------------|
+| `AND`    | Verdadeiro quando todas as condições são verdadeiras   | `idade >= 18 AND renda_familiar > 2000` |
+| `OR`     | Verdadeiro quando pelo menos uma condição é verdadeira | `idade < 18 OR renda_familiar > 5000`   |
+| `NOT`    | Inverte o resultado de uma condição                    | `NOT (idade < 18)`                      |
+
+### Exemplo prático
+
+A consulta abaixo seleciona alunos adultos com renda familiar acima de 2000 ou alunos menores de idade cuja renda familiar não é inferior a 1000.
+
+``` sql
+SELECT id_aluno, nome_aluno, idade, renda_familiar
+FROM aluno
+WHERE (idade >= 18 AND renda_familiar > 2000) 
+  OR (idade < 18 AND NOT (renda_familiar < 1000));
+```
+
+## Operadores especiais
+
+Já alguns operadores especiais que são usados para determinar melhor as linhas que queremos filtrar. São eles: `IS NULL`, `IS NOT NULL`, `BETWEEN`, `LIKE` e `IN`. Vamos ver cada um deles a seguir.
+
+## IS NULL
+
+`IS NULL` seleciona registros em que a coluna não possui um valor definido. Em SQL, não se deve usar `= NULL` para essa verificação.
+
+``` sql
+SELECT id_aluno, nome_aluno
+FROM aluno
+WHERE renda_familiar IS NULL;
+```
+
+## IS NOT NULL
+
+`IS NOT NULL` seleciona registros em que a coluna possui um valor definido.
+
+``` sql
+SELECT id_aluno, nome_aluno, renda_familiar
+FROM aluno
+WHERE renda_familiar IS NOT NULL;
+```
+
+## BETWEEN
+
+`BETWEEN` verifica se um valor está dentro de um intervalo. Os limites do intervalo são inclusivos.
+
+``` sql
+SELECT id_aluno, nome_aluno, idade
+FROM aluno
+WHERE idade BETWEEN 18 AND 25;
+```
+
+## LIKE
+
+`LIKE` compara textos usando padrões. O caractere `%` representa qualquer sequência de caracteres; `_` representa um único caractere.
+
+| Padrão    | O que corresponde                           |
+|-----------|---------------------------------------------|
+| `'a%'`    | Textos que começam com `a`                  |
+| `'%a'`    | Textos que terminam com `a`                 |
+| `'%ana%'` | Textos que contêm `ana` em qualquer posição |
+
+Também é possível usar `NOT LIKE` para selecionar textos que não correspondem ao padrão. Por exemplo, `nome_aluno NOT LIKE 'a%'` seleciona nomes que não começam com `a`.
+
+``` sql
+SELECT id_aluno, nome_aluno
+FROM aluno
+WHERE nome_aluno LIKE 'a%';
+```
+
+``` sql
+SELECT id_aluno, nome_aluno
+FROM aluno
+WHERE nome_aluno NOT LIKE 'a%';
+```
+
+## IN
+
+`IN` verifica se o valor de uma coluna corresponde a algum dos valores de uma lista.
+
+``` sql
+SELECT id_aluno, nome_aluno, idade
+FROM aluno
+WHERE idade IN (18, 20, 25);
+```
+
+## Exercícios
+
+Use o dataset [Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing) do UCI Machine Learning Repository. Para os exercícios, escolha o arquivo `bank-full.csv`, que contém 45.211 registros e 17 variáveis: `age`, `job`, `marital`, `education`, `default`, `balance`, `housing`, `loan`, `contact`, `day`, `month`, `duration`, `campaign`, `pdays`, `previous`, `poutcome` e `y`.
+
+### Criação e importação da tabela
+
+1.  Crie um banco de dados chamado `bank_marketing` no MySQL.
+
+2.  Crie nele uma tabela chamada `campanhas` com uma coluna para cada variável do dataset. Escolha tipos de dados adequados para as variáveis numéricas e categóricas. Como o arquivo não fornece um identificador único para cada registro, inclua também uma coluna `id` como chave primária.
+
+3.  Importe os dados de `bank-full.csv` para a tabela. Observe o cabeçalho do arquivo e o separador usado entre as colunas.
+
+4.  Consulte todas as colunas da tabela `campanhas`.
+
+5.  Consulte apenas as colunas `age`, `job`, `education` e `balance`.
+
+6.  Liste os diferentes tipos de trabalho (`job`) registrados no dataset, sem repetir valores.
+
+7.  Ordene os registros pelo saldo (`balance`) em ordem crescente e, depois, em ordem decrescente.
+
+8.  Ordene os registros primeiro por `job` e, dentro de cada tipo de trabalho, por `age` em ordem crescente.
+
+9.  Encontre clientes com mais de 60 anos.
+
+10. Encontre clientes cujo saldo (`balance`) seja negativo.
+
+11. Encontre clientes que tenham sido contatados pelo menos três vezes na campanha atual (`campaign`).
+
+12. Encontre clientes com saldo entre 1.000 e 5.000, incluindo os limites.
+
+13. Encontre clientes cujo tipo de trabalho (`job`) comece com `admin`.
+
+14. Encontre clientes cujo resultado da campanha anterior (`poutcome`) seja `success`, `failure` ou `other`, usando uma lista de valores.
+
+15. Encontre clientes que tenham aceitado o depósito (`y = 'yes'`) e tenham saldo maior que 1.000
+
+16. Encontre clientes que tenham aceitado o depósito ou tenham saldo maior que 10.000.
+
+17. Encontre clientes que não aceitaram o depósito.
+
+18. Verifique se há valores SQL nulos na coluna `contact`. Depois, procure os registros em que `contact` tem o texto `unknown`. Os dois resultados são iguais? Explique a diferença entre `NULL` e o texto `'unknown'`.
