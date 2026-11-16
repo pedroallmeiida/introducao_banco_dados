@@ -1,0 +1,89 @@
+---
+title: "Comandos Subqueries"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Até agora vimos como realizar pesquisas em uma única tabela. Contudo, na montagem do nosso modelo de dados sempre temos diveras tabelas. Logo é necessário sabermos como vincular a informação dessas tabelas de forma a mostrar a informação de maneira correta. A isto é dado o nome de união de tabelas (join).
+
+# Junção de tabelas
+
+O comando `JOIN` combina linhas de duas tabelas relacionadas. A condição que indica como as linhas se correspondem é especificada com `ON`, geralmente comparando uma chave primária com a chave estrangeira correspondente.
+
+## Sintaxe geral
+
+``` sql
+SELECT colunas
+FROM tabela1
+TIPO JOIN tabela2
+    ON tabela1.chave = tabela2.chave_estrangeira;
+```
+
+Nos exemplos, `orders.customer_id` referencia `customers.id`, e `products.category_id` referencia `categories.id`.
+
+## `INNER JOIN`
+
+Retorna somente as linhas que possuem correspondência nas duas tabelas:
+
+``` sql
+SELECT
+    o.id AS order_id,
+    o.status,
+    c.first_name,
+    c.last_name
+FROM orders AS o
+INNER JOIN customers AS c
+    ON o.customer_id = c.id;
+```
+
+## `LEFT JOIN`
+
+Retorna todas as linhas da tabela à esquerda (`customers`) e as correspondências da tabela à direita (`orders`). Quando não há pedido para um cliente, as colunas de `orders` recebem `NULL`. `LEFT OUTER JOIN` é uma forma equivalente:
+
+``` sql
+SELECT
+    c.id AS customer_id,
+    c.first_name,
+    o.id AS order_id,
+    o.status
+FROM customers AS c
+LEFT JOIN orders AS o
+    ON c.id = o.customer_id;
+```
+
+## `RIGHT JOIN`
+
+Retorna todas as linhas da tabela à direita (`orders`) e as correspondências da tabela à esquerda (`customers`). Se não houver cliente correspondente, as colunas de `customers` recebem `NULL`. `RIGHT OUTER JOIN` é equivalente:
+
+``` sql
+SELECT
+    c.id AS customer_id,
+    c.first_name,
+    o.id AS order_id,
+    o.status
+FROM customers AS c
+RIGHT JOIN orders AS o
+    ON c.id = o.customer_id;
+```
+
+## Exercícios
+
+Utilize os arquivos `orders.csv`, `customers.csv`, `products.csv` e `categories.csv`, disponíveis na pasta `datasets/dados_consumo` do [repositório](https://github.com/pedroallmeiida/introducao_banco_dados). Importe cada arquivo para uma tabela MySQL com o mesmo nome. Use os relacionamentos `orders.customer_id = customers.id` e `products.category_id = categories.id`.
+
+1.  Use `INNER JOIN` para listar o identificador, a data e o status de cada pedido junto com o nome e o sobrenome do cliente.
+2.  Use `LEFT JOIN` para listar todos os clientes e seus pedidos, incluindo clientes que ainda não fizeram pedidos.
+3.  Use `INNER JOIN` para listar cada produto com o nome de sua categoria.
+4.  Use `LEFT JOIN` para listar todas as categorias e seus produtos, incluindo categorias sem produtos.
+5.  Reescreva o exercício anterior usando `RIGHT JOIN`, mantendo todas as categorias no resultado.
+6.  Use `LEFT JOIN` e uma condição `IS NULL` para encontrar clientes que não possuem pedidos.
+7.  Use `RIGHT JOIN` para listar todos os pedidos com o nome e o sobrenome do cliente correspondente.
+8.  Reescreva o exercício 2 usando `RIGHT JOIN`, colocando `orders` à esquerda e `customers` à direita, para manter todos os clientes no resultado.
+9.  Use `LEFT JOIN` e `COUNT()` para contar os pedidos de cada cliente, incluindo os clientes sem pedidos. Agrupe o resultado pelo identificador e pelo nome do cliente.
+10. Use `LEFT JOIN` e `COUNT()` para contar quantos produtos existem em cada categoria, incluindo as categorias sem produtos.
+11. Liste o nome de cada produto, seu preço e o nome da categoria, exibindo apenas os produtos com preço maior que 50.
+12. Compare os resultados dos exercícios 1 e 2. Quais clientes aparecem no resultado do `LEFT JOIN` que podem não aparecer no resultado do `INNER     JOIN`?

@@ -1,0 +1,357 @@
+---
+title: "CTEs (Common Table Expressions)"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Uma **CTE** (*Common Table Expression*, ou expressão de tabela comum) é uma consulta temporária nomeada que pode ser usada pela consulta principal. Ela é declarada com `WITH` e existe apenas durante a execução daquela consulta.
+
+CTEs ajudam a dividir consultas complexas em etapas menores, facilitam a leitura do SQL e permitem reutilizar o resultado de uma etapa nas etapas seguintes.
+
+Os exemplos utilizam as tabelas `orders`, `customers`, `products` e `categories`, disponíveis na pasta `datasets/dados_consumo` do [repositório](https://github.com/pedroallmeiida/introducao_banco_dados).
+
+# Sintaxe básica
+
+Uma CTE começa com `WITH`, recebe um nome e contém uma consulta entre parênteses:
+
+``` sql
+WITH nome_da_cte AS (
+    SELECT colunas
+    FROM tabela
+    WHERE condição
+)
+SELECT *
+FROM nome_da_cte;
+```
+
+A CTE pode ser entendida como uma tabela derivada com nome. Ela não cria uma tabela permanente no banco de dados e não deve ser confundida com uma `VIEW`.
+
+## Primeiro exemplo
+
+A consulta a seguir separa os pedidos entregues em uma etapa chamada `delivered_orders`. A consulta principal usa essa CTE como se fosse uma tabela:
+
+``` sql
+WITH delivered_orders AS (
+    SELECT
+        id AS order_id,
+        customer_id,
+        created_at
+    FROM orders
+    WHERE status = 'entregue'
+)
+SELECT
+    order_id,
+    customer_id,
+    created_at
+FROM delivered_orders
+ORDER BY created_at;
+```
+
+O nome da CTE deve ser claro e não pode começar com um número. Os nomes das colunas podem ser definidos no cabeçalho:
+
+``` sql
+WITH recent_orders (order_id, customer_id, order_date) AS (
+    SELECT id, customer_id, created_at
+    FROM orders
+    WHERE created_at >= '2019-08-01'
+)
+SELECT *
+FROM recent_orders;
+```
+
+# Mais de uma CTE
+
+É possível declarar várias CTEs na mesma cláusula `WITH`, separando-as por vírgula. Uma CTE posterior pode usar uma CTE declarada anteriormente:
+
+``` sql
+WITH customer_orders AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count
+    FROM orders
+    GROUP BY customer_id
+),
+frequent_customers AS (
+    SELECT
+        customer_id,
+        order_count
+    FROM customer_orders
+    WHERE order_count >= 3
+)
+SELECT
+    c.id AS customer_id,
+    c.first_name,
+    c.last_name,
+    f.order_count
+FROM frequent_customers AS f
+INNER JOIN customers AS c
+    ON c.id = f.customer_id
+ORDER BY f.order_count DESC;
+```
+
+Essa organização deixa explícito o fluxo da consulta:
+
+1.  `customer_orders` conta os pedidos de cada cliente.
+2.  `frequent_customers` seleciona os clientes com pelo menos três pedidos.
+3.  A consulta principal acrescenta os dados pessoais dos clientes.
+
+## CTE com `JOIN`
+
+Uma CTE pode preparar os dados antes de fazer uma junção:
+
+``` sql
+WITH products_with_categories AS (
+    SELECT
+        p.id AS product_id,
+        p.name AS product_name,
+        p.price,
+        c.name AS category_name
+    FROM products AS p
+    INNER JOIN categories AS c
+        ON c.id = p.category_id
+)
+SELECT
+    product_id,
+    product_name,
+    category_name,
+    price
+FROM products_with_categories
+WHERE price > 50
+ORDER BY price DESC;
+```
+
+# CTEs e agregações
+
+CTEs são úteis para separar a etapa de agregação da etapa de filtragem ou classificação. No exemplo, a primeira CTE calcula a quantidade e a média de preço por categoria:
+
+``` sql
+WITH category_summary AS (
+    SELECT
+        category_id,
+        COUNT(*) AS product_count,
+        AVG(price) AS average_price,
+        MIN(price) AS minimum_price,
+        MAX(price) AS maximum_price
+    FROM products
+    GROUP BY category_id
+)
+SELECT
+    c.name AS category_name,
+    s.product_count,
+    s.average_price,
+    s.minimum_price,
+    s.maximum_price
+FROM category_summary AS s
+INNER JOIN categories AS c
+    ON c.id = s.category_id
+ORDER BY s.average_price DESC;
+```
+
+O filtro de grupos pode ser feito na consulta principal:
+
+``` sql
+WITH category_summary AS (
+    SELECT
+        category_id,
+        COUNT(*) AS product_count
+    FROM products
+    GROUP BY category_id
+)
+SELECT
+    c.name AS category_name,
+    s.product_count
+FROM category_summary AS s
+INNER JOIN categories AS c
+    ON c.id = s.category_id
+WHERE s.product_count >= 3;
+```
+
+# CTEs e funções de janela
+
+Uma CTE pode calcular uma função de janela e permitir que a consulta externa filtre o resultado. Isso é necessário porque funções de janela não podem ser usadas diretamente na cláusula `WHERE` da mesma consulta:
+
+``` sql
+WITH ranked_products AS (
+    SELECT
+        p.id AS product_id,
+        p.name AS product_name,
+        p.category_id,
+        p.price,
+        ROW_NUMBER() OVER (
+            PARTITION BY p.category_id
+            ORDER BY p.price DESC, p.id
+        ) AS price_position
+    FROM products AS p
+)
+SELECT
+    c.name AS category_name,
+    r.product_name,
+    r.price,
+    r.price_position
+FROM ranked_products AS r
+INNER JOIN categories AS c
+    ON c.id = r.category_id
+WHERE r.price_position <= 2
+ORDER BY c.name, r.price_position;
+```
+
+Nesse exemplo, a CTE calcula a posição de todos os produtos; a consulta externa mantém somente os dois produtos mais caros de cada categoria.
+
+# CTEs e consultas de clientes
+
+Podemos combinar várias etapas para produzir um relatório mais completo:
+
+``` sql
+WITH order_counts AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS total_orders
+    FROM orders
+    GROUP BY customer_id
+),
+last_order AS (
+    SELECT
+        customer_id,
+        MAX(created_at) AS last_order_date
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    c.id AS customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    COALESCE(oc.total_orders, 0) AS total_orders,
+    lo.last_order_date
+FROM customers AS c
+LEFT JOIN order_counts AS oc
+    ON oc.customer_id = c.id
+LEFT JOIN last_order AS lo
+    ON lo.customer_id = c.id
+ORDER BY total_orders DESC, customer_name;
+```
+
+O `LEFT JOIN` mantém clientes sem pedidos. Para eles, `total_orders` recebe zero com `COALESCE`, enquanto `last_order_date` permanece `NULL`.
+
+# CTE recursiva
+
+Uma CTE recursiva referencia a si mesma. Ela é útil para percorrer hierarquias, gerar sequências e resolver problemas em que uma etapa depende da etapa anterior. A sintaxe usa `WITH RECURSIVE`:
+
+``` sql
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS number
+
+    UNION ALL
+
+    SELECT number + 1
+    FROM numbers
+    WHERE number < 10
+)
+SELECT number
+FROM numbers;
+```
+
+Essa consulta possui duas partes:
+
+1.  **Parte inicial:** `SELECT 1` cria a primeira linha.
+2.  **Parte recursiva:** soma 1 ao valor anterior enquanto ele for menor que
+    10. 
+
+O `UNION ALL` combina as duas partes. A condição de parada no `WHERE` é obrigatória para evitar uma recursão infinita.
+
+## Hierarquias
+
+Considere uma tabela hipotética de funcionários:
+
+``` sql
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    manager_id INT NULL,
+    FOREIGN KEY (manager_id) REFERENCES employees(id)
+);
+```
+
+Uma CTE recursiva pode listar a hierarquia a partir do diretor:
+
+``` sql
+WITH RECURSIVE employee_tree AS (
+    SELECT
+        id,
+        name,
+        manager_id,
+        0 AS hierarchy_level,
+        CAST(name AS CHAR(1000)) AS hierarchy_path
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    SELECT
+        e.id,
+        e.name,
+        e.manager_id,
+        t.hierarchy_level + 1,
+        CONCAT(t.hierarchy_path, ' > ', e.name)
+    FROM employees AS e
+    INNER JOIN employee_tree AS t
+        ON e.manager_id = t.id
+)
+SELECT
+    id,
+    name,
+    manager_id,
+    hierarchy_level,
+    hierarchy_path
+FROM employee_tree
+ORDER BY hierarchy_path;
+```
+
+O `CAST` garante espaço suficiente para o caminho crescer durante a recursão. Em uma tabela real, também é importante garantir que os dados não formem ciclos.
+
+# CTE, subconsulta e `VIEW`
+
+| Recurso           | Duração                               | Uso típico                                                   |
+|------------------------|------------------------|------------------------|
+| CTE               | Apenas durante uma consulta           | Dividir e organizar uma consulta complexa.                   |
+| Subconsulta       | Apenas durante uma consulta           | Resolver uma etapa local ou uma condição.                    |
+| `VIEW`            | Fica armazenada no banco              | Reutilizar uma consulta em várias operações.                 |
+| Tabela temporária | Até ser removida ou terminar a sessão | Armazenar resultados intermediários maiores ou reutilizados. |
+
+Uma CTE melhora a organização, mas não garante por si só que uma consulta será mais rápida. O desempenho deve ser verificado com `EXPLAIN` e depende do otimizador, dos índices e da quantidade de dados.
+
+# Boas práticas
+
+-   Dê nomes descritivos às CTEs, como `customer_orders` ou `category_summary`.
+-   Faça cada CTE representar uma etapa lógica do problema.
+-   Selecione somente as colunas necessárias.
+-   Use `UNION ALL` em CTEs recursivas quando não precisar remover duplicatas.
+-   Defina uma condição de parada em toda CTE recursiva.
+-   Use aliases para deixar claro de qual CTE cada coluna vem.
+-   Verifique a consulta com `EXPLAIN` quando houver muitos dados.
+-   Não use CTE apenas para substituir uma consulta simples sem melhorar a clareza.
+
+# Exercícios
+
+Para os exercícios de 1 a 12, importe os arquivos `orders.csv`, `customers.csv`, `products.csv` e `categories.csv` para tabelas MySQL com os mesmos nomes. As colunas de relacionamento são `orders.customer_id = customers.id` e `products.category_id = categories.id`. Use o MySQL 8.0 ou superior.
+
+1.  Crie uma CTE chamada `delivered_orders` para selecionar somente os pedidos com status `entregue`. Na consulta principal, liste o pedido, o cliente e a data de criação.
+2.  Crie uma CTE que conte os pedidos por cliente. Use-a para listar o nome completo e a quantidade de pedidos de cada cliente, incluindo clientes sem pedidos.
+3.  Crie uma CTE com os produtos cujo preço é maior que 50. Depois, use a CTE para exibir o nome do produto, o preço e o nome da categoria.
+4.  Crie uma CTE que calcule a média de preço por categoria. Liste os produtos cujo preço seja maior que a média da própria categoria.
+5.  Use uma CTE para calcular a quantidade de produtos por categoria e exiba somente as categorias com pelo menos três produtos.
+6.  Crie duas CTEs: uma com a quantidade de pedidos por cliente e outra com a data do pedido mais recente. Combine-as com `customers` em um relatório que também mostre clientes sem pedidos.
+7.  Crie uma CTE com `ROW_NUMBER()` para numerar os pedidos de cada cliente. Na consulta externa, liste somente os três pedidos mais recentes de cada cliente.
+8.  Crie uma CTE que classifique os produtos por preço dentro de cada categoria. Liste os dois produtos mais caros de cada categoria usando `DENSE_RANK()`.
+9.  Crie uma CTE com o total de pedidos por cliente e outra com o total geral de pedidos. Calcule, para cada cliente, a porcentagem de participação no total.
+10. Use uma CTE para contar produtos por categoria e uma segunda CTE para ranquear as categorias pela quantidade de produtos.
+11. Use uma CTE com `LAG()` para obter o pedido anterior de cada cliente. Calcule, na consulta principal, quantos dias se passaram entre pedidos consecutivos.
+12. Use uma CTE com `NTILE(4)` para dividir os produtos em quatro faixas de preço. Conte quantos produtos existem em cada faixa.
+13. Escreva uma CTE recursiva chamada `numbers` que gere os números de 1 a
+    20. Depois, modifique-a para gerar somente os números pares.
+14. Crie uma tabela `employees` com `id`, `name` e `manager_id`, insira uma pequena hierarquia de funcionários e use uma CTE recursiva para exibir o nível e o caminho de cada funcionário.
+15. Reescreva uma consulta que use uma subconsulta na cláusula `FROM` utilizando uma CTE equivalente. Explique qual versão é mais legível e por quê.
+16. Use `EXPLAIN` para comparar uma consulta com CTE e uma consulta equivalente sem CTE. Registre o que mudou no plano de execução e explique por que uma CTE melhora a organização, mas não necessariamente o desempenho.

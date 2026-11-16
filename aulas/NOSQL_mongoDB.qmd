@@ -1,0 +1,534 @@
+---
+title: "Introdução a NoSQL e MongoDB"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+
+# O que é NoSQL?
+
+**NoSQL** significa, originalmente, “Not Only SQL” (“não apenas SQL”). O termo
+é usado para agrupar bancos de dados que não dependem exclusivamente do modelo
+relacional tradicional de tabelas, linhas e colunas.
+
+Em vez de impor um único modelo de dados, os bancos NoSQL oferecem diferentes
+formas de organizar informações. Os principais tipos são:
+
+| Tipo | Estrutura principal | Exemplos |
+|---|---|---|
+| Documentos | Documentos semelhantes a JSON | MongoDB, CouchDB |
+| Chave-valor | Pares `chave: valor` | Redis, Amazon DynamoDB |
+| Colunar | Famílias de colunas | Cassandra, HBase |
+| Grafos | Vértices e arestas | Neo4j, Amazon Neptune |
+
+NoSQL não significa que o banco não possa realizar consultas ou que SQL seja
+sempre inadequado. A escolha depende do formato dos dados, dos padrões de
+acesso, da necessidade de transações, da escala e dos requisitos da aplicação.
+
+## Características comuns
+
+Muitos bancos NoSQL são projetados para:
+
+- armazenar grandes volumes de dados;
+- distribuir dados entre vários servidores;
+- crescer horizontalmente, adicionando máquinas ao sistema;
+- trabalhar com dados sem esquema rígido;
+- adaptar a estrutura do documento à aplicação;
+- atender consultas de alta velocidade em casos específicos.
+
+Essas características não eliminam a necessidade de modelagem. Mesmo em um
+banco sem esquema rígido, é importante definir nomes, tipos, relacionamentos e
+regras de validação consistentes.
+
+# JSON: a estrutura dos documentos
+
+**JSON** (*JavaScript Object Notation*) é um formato textual usado para
+representar dados estruturados. Ele é formado por objetos, arrays e valores.
+
+Um objeto JSON é delimitado por chaves e contém pares de propriedade e valor:
+
+```json
+{
+  "nome": "Ana",
+  "idade": 22,
+  "ativo": true
+}
+```
+
+Os tipos de valores permitidos no JSON são:
+
+- string, entre aspas duplas;
+- número inteiro ou decimal;
+- booleano `true` ou `false`;
+- `null`;
+- objeto, entre `{ }`;
+- array, entre `[ ]`.
+
+Uma propriedade deve sempre ter aspas duplas. JSON não permite comentários,
+vírgula depois do último item ou aspas simples no lugar de aspas duplas.
+
+## Objetos aninhados e arrays
+
+Um valor pode ser outro objeto ou um array:
+
+```json
+{
+  "nome": "Ana",
+  "endereco": {
+    "cidade": "Campina Grande",
+    "estado": "PB"
+  },
+  "interesses": ["bancos de dados", "Python", "estatística"]
+}
+```
+
+O documento acima tem uma propriedade `endereco`, que é um objeto embutido, e
+uma propriedade `interesses`, que é um array de strings.
+
+
+# MongoDB: documentos e coleções
+
+No MongoDB:
+
+- um **banco de dados** contém coleções;
+- uma **coleção** contém documentos;
+- um **documento** é semelhante a um objeto JSON;
+- um **campo** corresponde a uma propriedade do documento;
+- um **array** pode armazenar vários valores ou subdocumentos.
+
+Uma coleção pode conter documentos com campos diferentes. Essa flexibilidade é
+chamada de **esquema flexível**. Flexível não significa desorganizado: a
+aplicação pode definir validações para garantir que os documentos importantes
+tenham a mesma estrutura.
+
+## Modelo relacional e modelo de documentos
+
+Em um modelo relacional, um cliente e seus endereços poderiam estar separados
+em tabelas relacionadas por chaves:
+
+```text
+customers(id, name, email)
+addresses(id, customer_id, city, state)
+```
+
+No modelo de documentos, os dados usados juntos podem ser armazenados no mesmo
+documento:
+
+```json
+{
+  "_id": "customer-001",
+  "name": "Ana Souza",
+  "email": "ana@example.com",
+  "address": {
+    "city": "Campina Grande",
+    "state": "PB"
+  }
+}
+```
+
+Embuta dados quando eles fazem parte do mesmo contexto e são consultados
+juntos. Use referências quando os dados forem compartilhados, crescerem sem
+limite ou forem atualizados separadamente.
+
+# Dataset de exemplo
+
+O arquivo [clientes_mongodb.json](../datasets/dados_nosql/clientes_mongodb.json)
+contém documentos de clientes com endereço, preferências e pedidos embutidos.
+Cada item do array JSON é um documento que será importado para a coleção
+`customers`.
+
+Um dos documentos possui esta estrutura resumida:
+
+```json
+{
+  "_id": "customer-001",
+  "name": {
+    "first": "Ana",
+    "last": "Souza"
+  },
+  "email": "ana.souza@example.com",
+  "address": {
+    "city": "Campina Grande",
+    "state": "PB"
+  },
+  "preferences": ["livros", "tecnologia"],
+  "orders": [
+    {
+      "number": "order-1001",
+      "status": "delivered",
+      "total": 129.90
+    }
+  ]
+}
+```
+
+Observe que `name` e `address` são objetos aninhados, enquanto `preferences` e
+`orders` são arrays. Um pedido também é um documento embutido dentro do
+cliente.
+
+# Iniciando o MongoDB
+
+Os exemplos podem ser executados no **MongoDB Shell** (`mongosh`) conectado a
+uma instância local ou a um cluster do MongoDB Atlas.
+
+Para selecionar um banco chamado `loja_aula`:
+
+```javascript
+use loja_aula
+```
+
+O banco e a coleção podem ser criados automaticamente quando o primeiro
+documento for inserido:
+
+```javascript
+db.customers.insertOne({
+  _id: "customer-999",
+  name: {
+    first: "Cliente",
+    last: "Teste"
+  },
+  email: "cliente.teste@example.com"
+})
+```
+
+Para listar os bancos e as coleções:
+
+```javascript
+show dbs
+show collections
+```
+
+# Importando o arquivo JSON
+
+Com o servidor MongoDB em execução, use o comando `mongoimport` no terminal,
+fora do `mongosh`:
+
+```powershell
+mongoimport `
+  --db loja_aula `
+  --collection customers `
+  --file datasets\dados_nosql\clientes_mongodb.json `
+  --jsonArray
+```
+
+O parâmetro `--jsonArray` informa que o arquivo contém um único array com
+vários documentos. Sem esse parâmetro, o `mongoimport` espera, por padrão, um
+documento JSON por linha.
+
+Depois da importação, no `mongosh`:
+
+```javascript
+use loja_aula
+db.customers.countDocuments()
+db.customers.find()
+```
+
+# Operações básicas no MongoDB
+
+## Inserindo documentos
+
+`insertOne()` insere um documento:
+
+```javascript
+db.customers.insertOne({
+  _id: "customer-010",
+  name: {
+    first: "Bruno",
+    last: "Lima"
+  },
+  email: "bruno.lima@example.com",
+  address: {
+    city: "João Pessoa",
+    state: "PB"
+  },
+  preferences: ["esportes"]
+})
+```
+
+`insertMany()` insere vários documentos de uma vez:
+
+```javascript
+db.customers.insertMany([
+  {
+    _id: "customer-011",
+    name: { first: "Carla", last: "Melo" },
+    email: "carla.melo@example.com"
+  },
+  {
+    _id: "customer-012",
+    name: { first: "Diego", last: "Ramos" },
+    email: "diego.ramos@example.com"
+  }
+])
+```
+
+## Consultando documentos
+
+`find()` retorna documentos que atendem ao filtro. Um objeto vazio retorna
+todos:
+
+```javascript
+db.customers.find({})
+```
+
+Para encontrar clientes de um estado:
+
+```javascript
+db.customers.find({
+  "address.state": "PB"
+})
+```
+
+O ponto em `"address.state"` acessa um campo de um objeto aninhado. Para
+mostrar apenas alguns campos, use uma projeção:
+
+```javascript
+db.customers.find(
+  { "address.state": "PB" },
+  {
+    _id: 0,
+    "name.first": 1,
+    "name.last": 1,
+    email: 1
+  }
+)
+```
+
+Os operadores de comparação mais comuns são:
+
+| Operador | Significado |
+|---|---|
+| `$eq` | igual |
+| `$ne` | diferente |
+| `$gt` | maior que |
+| `$gte` | maior ou igual |
+| `$lt` | menor que |
+| `$lte` | menor ou igual |
+| `$in` | pertence a uma lista |
+| `$nin` | não pertence a uma lista |
+
+Exemplo: encontrar clientes que possuem pelo menos um pedido com total maior
+que 100:
+
+```javascript
+db.customers.find({
+  "orders.total": { $gt: 100 }
+})
+```
+
+Para combinar condições, use `$and` ou `$or`:
+
+```javascript
+db.customers.find({
+  $and: [
+    { "address.state": "PB" },
+    { preferences: "tecnologia" }
+  ]
+})
+```
+
+## Atualizando documentos
+
+`updateOne()` atualiza o primeiro documento que corresponde ao filtro. Use
+operadores de atualização, como `$set`, para alterar campos:
+
+```javascript
+db.customers.updateOne(
+  { _id: "customer-001" },
+  {
+    $set: {
+      "address.number": 100,
+      phone: "83999990000"
+    }
+  }
+)
+```
+
+Para adicionar um item a um array sem permitir duplicatas, use `$addToSet`:
+
+```javascript
+db.customers.updateOne(
+  { _id: "customer-001" },
+  {
+    $addToSet: {
+      preferences: "cursos"
+    }
+  }
+)
+```
+
+Para adicionar um novo pedido ao array, use `$push`:
+
+```javascript
+db.customers.updateOne(
+  { _id: "customer-001" },
+  {
+    $push: {
+      orders: {
+        number: "order-1010",
+        status: "pending",
+        total: 89.90
+      }
+    }
+  }
+)
+```
+
+`updateMany()` atualiza todos os documentos que correspondem ao filtro:
+
+```javascript
+db.customers.updateMany(
+  { "address.state": "PB" },
+  {
+    $set: {
+      region: "Nordeste"
+    }
+  }
+)
+```
+
+## Removendo documentos
+
+Remova um documento específico com `deleteOne()`:
+
+```javascript
+db.customers.deleteOne({
+  _id: "customer-010"
+})
+```
+
+Para remover todos os documentos que atendem a uma condição, use
+`deleteMany()`. Execute essa operação com cuidado:
+
+```javascript
+db.customers.deleteMany({
+  region: "teste"
+})
+```
+
+# Agregação
+
+O método `aggregate()` executa um pipeline. Cada estágio recebe o resultado
+do estágio anterior e o transforma.
+
+O exemplo abaixo calcula a quantidade e o total dos pedidos por cliente:
+
+```javascript
+db.customers.aggregate([
+  {
+    $unwind: "$orders"
+  },
+  {
+    $group: {
+      _id: "$_id",
+      customer_name: { $first: "$name" },
+      order_count: { $sum: 1 },
+      total_spent: { $sum: "$orders.total" }
+    }
+  },
+  {
+    $sort: {
+      total_spent: -1
+    }
+  }
+])
+```
+
+Os estágios usados são:
+
+- `$unwind`: transforma cada item do array `orders` em uma linha do pipeline;
+- `$group`: agrupa documentos e calcula valores;
+- `$sum`: soma números ou conta ocorrências;
+- `$first`: preserva o primeiro valor encontrado no grupo;
+- `$sort`: ordena o resultado; `1` é crescente e `-1` é decrescente.
+
+Para selecionar apenas pedidos entregues antes de agrupá-los:
+
+```javascript
+db.customers.aggregate([
+  {
+    $unwind: "$orders"
+  },
+  {
+    $match: {
+      "orders.status": "delivered"
+    }
+  },
+  {
+    $group: {
+      _id: "$address.state",
+      delivered_orders: { $sum: 1 }
+    }
+  }
+])
+```
+
+# Índices
+
+Um índice pode acelerar consultas frequentes, mas ocupa espaço e pode tornar
+inserções e atualizações um pouco mais custosas.
+
+Para criar um índice no email:
+
+```javascript
+db.customers.createIndex({
+  email: 1
+})
+```
+
+Para criar um índice no campo aninhado `address.state`:
+
+```javascript
+db.customers.createIndex({
+  "address.state": 1
+})
+```
+
+Consulte os índices existentes com:
+
+```javascript
+db.customers.getIndexes()
+```
+
+Use `explain()` para observar o plano de execução de uma consulta:
+
+```javascript
+db.customers.find({
+  "address.state": "PB"
+}).explain("executionStats")
+```
+
+
+# Exercícios
+
+Use o arquivo
+[clientes_mongodb.json](../datasets/dados_nosql/clientes_mongodb.json) e
+importe-o para o banco `loja_aula`, na coleção `customers`.
+
+1. Conte quantos documentos existem na coleção usando `countDocuments()`.
+2. Liste todos os clientes mostrando somente `_id`, email e estado.
+3. Encontre os clientes que moram no estado `PB`.
+4. Encontre os clientes que possuem `"tecnologia"` no array `preferences`.
+5. Encontre clientes que possuem pelo menos um pedido com total maior que
+   `100`.
+6. Insira um novo cliente com nome, email, cidade e uma preferência.
+7. Atualize o email de um cliente usando `updateOne()` e `$set`.
+8. Adicione uma preferência usando `$addToSet` e verifique se a operação não
+   cria duplicatas.
+9. Adicione um pedido ao array `orders` usando `$push`.
+10. Use `aggregate()` com `$unwind` e `$group` para calcular o total gasto por
+    estado.
+11. Use `$match` e `$group` para contar somente os pedidos com status
+    `delivered`.
+12. Crie um índice para `"address.state"` e compare a consulta com
+    `explain("executionStats")`.
+13. Crie um documento com uma estrutura diferente dos demais. Consulte-o e
+    explique por que o MongoDB permite essa flexibilidade.
+14. Discuta se `orders` deveria continuar embutido em `customers` caso um
+    cliente pudesse realizar milhões de pedidos. Proponha um modelo alternativo
+    usando referências.

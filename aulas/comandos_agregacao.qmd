@@ -1,0 +1,146 @@
+---
+title: "Comandos de agregação do SQL"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Funções de agrupamento operam conjunto de linhas visando fornecer um resultado para o grupo. Até agora trabalhamos apenas com funções que travavam apenas uma linha de cada vez. A diferença básica é que serão utilizados grupos de linhas. Esses grupos podem ser constituídos desde toda a tabela até subgrupos da tabela. 
+
+
+# Funções de agregação
+
+Existe diversas funções para agregação que são implementadas pelo padrão SQL. Essas funções auxiliam a computar uma variedade de medidas baseadas em valores das colunas do banco de dados. As principais funções são: 
+
+| Função      | Ação                                      | Exemplo SQL                                      |
+|-------------|-------------------------------------------|--------------------------------------------------|
+| `COUNT`     | Conta as linhas ou os valores não nulos.  | `SELECT COUNT(*) FROM TABELA_CD;`               |
+| `SUM`       | Calcula a soma dos valores.               | `SELECT SUM(PRECO_VENDA) FROM TABELA_CD;`        |
+| `AVG`       | Calcula a média dos valores.               | `SELECT AVG(PRECO_VENDA) FROM TABELA_CD;`        |
+| `MIN`       | Retorna o menor valor.                     | `SELECT MIN(PRECO_VENDA) FROM TABELA_CD;`        |
+| `MAX`       | Retorna o maior valor.                     | `SELECT MAX(PRECO_VENDA) FROM TABELA_CD;`        |
+| `STDDEV`    | Calcula o desvio padrão dos valores.        | `SELECT STDDEV(PRECO_VENDA) FROM TABELA_CD;`     |
+| `VARIANCE`  | Calcula a variância dos valores.            | `SELECT VARIANCE(PRECO_VENDA) FROM TABELA_CD;`   |
+
+## Conversão de tipos de dados
+
+Frequentemente é necessário realizar a conversão do tipo da variável para determinadas situações. Para isso utilizamos a função CAST. 
+
+Sintaxe: `CAST( dado_origem AS tipo_dado_destino)`
+
+Exemplo: 
+```sql
+SELECT CAST ( AVG(PRECO_VENDA) AS DECIMAL )
+COLUNA FROM CD 
+```
+
+```sql
+SELECT CAST ( AVG(PRECO_VENDA) AS DECIMAL ) AS MEDIA_PRECO 
+FROM CD 
+```
+
+## Agrupando resultados 
+
+Uma característica importante do SQL é o poder de agrupar linhas com base em valores de determinadas colunas. Dessa forma, não estaremos trabalhando na pesquisa em todas as linhas da tabela, como fizemos anteriormente, mas sim em grupos menores. Para isso utilizamos as funções de agrupamento em conjunto com a cláusula `GROUP BY`. 
+
+Sintaxe: 
+
+```sql
+SELECT coluna_grupo, funcao(coluna)
+FROM nome_tabela
+GROUP BY coluna_grupo
+```
+
+### Exemplo de `GROUP BY`
+
+O exemplo a seguir agrupa os registros pelo nome do CD e calcula as principais
+medidas sobre os preços de venda de cada grupo:
+
+```sql
+SELECT
+    NOME_CD,
+    COUNT(*) AS QUANTIDADE,
+    SUM(PRECO_VENDA) AS SOMA_PRECOS,
+    AVG(PRECO_VENDA) AS MEDIA_PRECOS,
+    MIN(PRECO_VENDA) AS MENOR_PRECO,
+    MAX(PRECO_VENDA) AS MAIOR_PRECO,
+    STDDEV(PRECO_VENDA) AS DESVIO_PADRAO,
+    VARIANCE(PRECO_VENDA) AS VARIANCIA
+FROM CD
+GROUP BY NOME_CD;
+```
+
+### Agrupando usando WHERE 
+
+`WHERE` filtra as linhas antes de elas serem agrupadas. No exemplo, apenas
+registros com preço de venda maior que zero participam do agrupamento:
+
+```sql
+SELECT
+    NOME_CD,
+    COUNT(*) AS QUANTIDADE,
+    AVG(PRECO_VENDA) AS MEDIA_PRECOS
+FROM CD
+WHERE PRECO_VENDA > 0
+GROUP BY NOME_CD;
+```
+
+## HAVING 
+
+`GROUP BY` reúne linhas que têm o mesmo valor na coluna indicada; ele não
+filtra os grupos. `HAVING` seleciona quais grupos permanecem no resultado,
+geralmente usando uma função de agregação. Já `WHERE`, apresentado acima,
+filtra as linhas antes de formar os grupos.
+
+| Cláusula | Função |
+|----------|--------|
+| `WHERE`  | Filtra linhas antes do agrupamento. |
+| `GROUP BY` | Forma grupos de linhas. |
+| `HAVING` | Filtra os grupos após a agregação. |
+
+No exemplo, `WHERE` exclui linhas com preço igual ou inferior a zero;
+`GROUP BY` agrupa as linhas restantes pelo nome do CD; e `HAVING` mantém
+somente os grupos com pelo menos dois registros:
+
+```sql
+SELECT
+    NOME_CD,
+    COUNT(*) AS QUANTIDADE,
+    AVG(PRECO_VENDA) AS MEDIA_PRECOS
+FROM CD
+WHERE PRECO_VENDA > 0
+GROUP BY NOME_CD
+HAVING COUNT(*) >= 2;
+```
+
+## Exercícios
+
+Para os exercícios, extraia o arquivo `bank-full.csv` de `bank.zip`, disponível
+na pasta `datasets/bank_marketing` do
+[repositório](https://github.com/pedroallmeiida/introducao_banco_dados). Importe
+os dados para uma tabela chamada `bank_marketing` em um banco MySQL. O arquivo
+usa ponto e vírgula (`;`) como separador de campos.
+
+1. Conte o número total de registros da tabela usando `COUNT(*)`.
+2. Calcule, para a coluna `balance`, a soma, a média, o menor e o maior valor,
+   o desvio padrão e a variância.
+3. Conte quantos registros existem para cada categoria da coluna `job`.
+4. Para cada nível de `education`, calcule a média, o menor e o maior saldo
+   (`balance`).
+5. Usando `WHERE` para considerar somente registros em que `y = 'yes'`, conte
+   os registros e calcule o saldo médio para cada categoria de `job`.
+6. Considere somente registros em que `loan = 'yes'` e, para cada estado civil
+   (`marital`), calcule a quantidade de registros e a duração média do contato
+   (`duration`).
+7. Agrupe os registros por `job` e use `HAVING` para exibir somente as
+   categorias com pelo menos 1.000 registros.
+8. Combine `WHERE`, `GROUP BY` e `HAVING`: considere apenas registros em que
+   `housing = 'yes'`, agrupe por `education` e mantenha grupos com pelo menos
+   500 registros.
+9. Agrupe os registros pelo resultado da campanha (`y`) e compare a quantidade
+   de registros e a duração média dos contatos entre os grupos.
+

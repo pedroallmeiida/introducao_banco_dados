@@ -1,0 +1,119 @@
+[
+  {
+    "_id": "customer-001",
+    "name": {
+      "first": "Ana",
+      "last": "Souza"
+    },
+    "email": "ana.souza@example.com",
+    "address": {
+      "city": "Campina Grande",
+      "state": "PB"
+    },
+    "preferences": [
+      "livros",
+      "tecnologia"
+    ],
+    "orders": [
+      {
+        "number": "order-1001",
+        "status": "delivered",
+        "total": 129.9
+      },
+      {
+        "number": "order-1002",
+        "status": "pending",
+        "total": 89.9
+      }
+    ]
+  },
+  {
+    "_id": "customer-002",
+    "name": {
+      "first": "Bruno",
+      "last": "Lima"
+    },
+    "email": "bruno.lima@example.com",
+    "address": {
+      "city": "Joao Pessoa",
+      "state": "PB"
+    },
+    "preferences": [
+      "esportes"
+    ],
+    "orders": [
+      {
+        "number": "order-1003",
+        "status": "delivered",
+        "total": 249.5
+      }
+    ]
+  },
+  {
+    "_id": "customer-003",
+    "name": {
+      "first": "Carla",
+      "last": "Melo"
+    },
+    "email": "carla.melo@example.com",
+    "address": {
+      "city": "Recife",
+      "state": "PE"
+    },
+    "preferences": [
+      "beleza",
+      "livros"
+    ],
+    "orders": []
+  },
+  {
+    "_id": "customer-004",
+    "name": {
+      "first": "Diego",
+      "last": "Ramos"
+    },
+    "email": "diego.ramos@example.com",
+    "address": {
+      "city": "Natal",
+      "state": "RN"
+    },
+    "preferences": [
+      "tecnologia",
+      "casa"
+    ],
+    "orders": [
+      {
+        "number": "order-1004",
+        "status": "cancelled",
+        "total": 59.9
+      },
+      {
+        "number": "order-1005",
+        "status": "delivered",
+        "total": 399.0
+      }
+    ]
+  },
+  {
+    "_id": "customer-005",
+    "name": {
+      "first": "Elisa",
+      "last": "Costa"
+    },
+    "email": "elisa.costa@example.com",
+    "address": {
+      "city": "Maceio",
+      "state": "AL"
+    },
+    "preferences": [
+      "casa"
+    ],
+    "orders": [
+      {
+        "number": "order-1006",
+        "status": "delivered",
+        "total": 74.5
+      }
+    ]
+  }
+]

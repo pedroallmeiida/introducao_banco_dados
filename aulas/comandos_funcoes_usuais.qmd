@@ -1,0 +1,148 @@
+---
+title: "Comandos de cálculos e funções usuais"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Outra utilização bastante importante no SQL é fazer cálculos e totalizações de valores unitários. Agora, vamos verificar como realizar esses cálculos e totalizações, além da utilização de algumas funções de manipulação de caracteres.
+
+# Cálculos
+
+Podemos fazer cálculos quando realizamos buscas em tabelas de banco de dados, simplesmente aplicando operadores aritméticos a colunas. Por exemplo:
+
+``` sql
+SELECT CODIGO_CD, NOME_CD, PRECO_VENDA, PRECO_VENDA * 0.9 as PRECO_DESCONTO
+FROM TABELA_CD 
+```
+
+Os operadores aritméticos padrão do SQL são: soma (`+`), subtração (`-`), multiplicação (`*`), e divisão (`/`).
+
+### Operadores Alfanuméricos
+
+O padrão SQL indica o uso de um operador para concatenar alfanuméricos e de algumas funções para manipulá-los.
+
+## CONCATENAÇÃO
+
+Para concatenar cadeias de caracteres, utilizamos dois pipes ( `||` ). Dessa forma, se quisermos verificar o nome do curso seguido do email do departamento, utilizaremos o seguinte comando:
+
+``` sql
+SELECT NOME_CURSO || ' - ' || EMAIL_DEPARTAMENTO
+FROM TABELA_CURSOS;
+```
+
+## UPPER e LOWER
+
+`UPPER` converte os caracteres de um texto para maiúsculas, enquanto `LOWER` converte para minúsculas. Essas funções podem ser úteis, por exemplo, para padronizar a exibição de nomes:
+
+``` sql
+SELECT
+    UPPER(nome_aluno) AS nome_maiusculo,
+    LOWER(nome_aluno) AS nome_minusculo
+FROM aluno;
+```
+
+## TRIM
+
+`TRIM` remove espaços em branco do início e do fim de um texto. No exemplo, o nome é exibido sem espaços excedentes nas extremidades:
+
+``` sql
+SELECT TRIM(nome_aluno) AS nome_sem_espacos
+FROM aluno;
+```
+
+## SUBSTRING
+
+`SUBSTRING` retorna uma parte de um texto. No MySQL, a posição inicial começa em 1; o terceiro argumento indica quantos caracteres serão retornados:
+
+``` sql
+SELECT SUBSTRING(nome_aluno, 1, 3) AS inicio_do_nome
+FROM aluno;
+```
+
+## REPLACE
+
+`REPLACE` substitui todas as ocorrências de um trecho de texto por outro. Neste exemplo, os espaços do nome são substituídos por sublinhados:
+
+``` sql
+SELECT REPLACE(nome_aluno, ' ', '_') AS nome_com_sublinhados
+FROM aluno;
+```
+
+## Manipulação de datas
+
+Quando criamos colunas do tipo Data, podemos realizar uma série de cálculos e operações cronolágicas. Podemos calcular o número de dias entre duas datas, somar e subtrair dias, meses etc.
+
+O padrão SQL especifica quatro tipos de dados relacionados a data e hora:
+
+| Tipo        | Descrição   |
+|-------------|-------------|
+| `DATE`      | Apenas data |
+| `TIME`      | Apenas hora |
+| `TIMESTAMP` | Data e hora |
+
+O padrão SQL definiu algumas funções para determinar a data e hora atuais do sistema, acrescentando o CURRENT\_ antes dos três tipos de dados de data e hora: `CURRENT_DATE`, `CURRENT_TIME` e `CURRENT_TIMESTAMP`.
+
+### Operações aritméticas com datas
+
+Uma coluna do tipo data é composta de seis elementos:
+
+-   YEAR (ano)
+-   MONTH (mês)
+-   DAY (dia)
+-   HOUR (hora)
+-   MINUTE (minuto)
+-   SECOND (segundo)
+
+Na tabela a seguir podemos visualizar quais os resultados para operações com data:
+
+### Exemplo de manipulações
+
+Os exemplos a seguir usam a sintaxe do MySQL. `CURRENT_DATE()` retorna a data atual, e `DATEDIFF()` calcula a diferença entre duas datas em dias:
+
+``` sql
+SELECT
+    nome_aluno,
+    data_matricula,
+    CURRENT_DATE() AS data_atual,
+    DATEDIFF(CURRENT_DATE(), data_matricula) AS dias_desde_matricula
+FROM aluno;
+```
+
+`EXTRACT()` permite obter uma parte específica de uma data, como o ano, o mês ou o dia:
+
+``` sql
+SELECT
+    nome_aluno,
+    EXTRACT(YEAR FROM data_matricula) AS ano_matricula,
+    EXTRACT(MONTH FROM data_matricula) AS mes_matricula,
+    EXTRACT(DAY FROM data_matricula) AS dia_matricula
+FROM aluno;
+```
+
+Para somar um intervalo a uma data, o MySQL também oferece `DATE_ADD()`. Neste exemplo, calculamos a data que corresponde a um mês após a matrícula:
+
+``` sql
+SELECT
+    nome_aluno,
+    data_matricula,
+    DATE_ADD(data_matricula, INTERVAL 1 MONTH) AS um_mes_apos_matricula
+FROM aluno;
+```
+
+## Exercícios
+
+Para os exercícios, utilize os dados do arquivo `orders_com_data_entrega.csv`, disponível na pasta `datasets/dados_consumo` do [repositório](https://github.com/pedroallmeiida/introducao_banco_dados). Importe o arquivo para uma tabela chamada `orders` em um banco MySQL.
+
+1.  Exiba o identificador (`id`) de cada pedido e o status (`status`) em letras maiúsculas e minúsculas, usando `UPPER()` e `LOWER()`.
+2.  Exiba o status de cada pedido após remover espaços em branco do início e do fim com `TRIM()`.
+3.  Exiba os quatro primeiros caracteres do status de cada pedido usando `SUBSTRING()`.
+4.  Exiba o status substituindo cada sublinhado (`_`) por um espaço usando `REPLACE()`.
+5.  Exiba o identificador do pedido e o ano, o mês e o dia em que foi criado. Extraia essas partes da coluna `created_at` usando `EXTRACT()`.
+6.  Para os pedidos que já foram entregues, exiba `id`, `created_at`, `delivered_at` e o número de dias entre a criação e a entrega. Use `DATEDIFF()` e exclua os pedidos sem data de entrega.
+7.  Exiba a data atual e, para cada pedido, quantos dias se passaram desde sua criação. Use `CURRENT_DATE()` e `DATEDIFF()`.
+8.  Para cada pedido, calcule a data que corresponde a sete dias após sua criação usando `DATE_ADD()`.

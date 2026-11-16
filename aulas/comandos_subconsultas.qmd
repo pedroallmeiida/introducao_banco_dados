@@ -1,0 +1,130 @@
+---
+title: "Subconsultas no SQL"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Uma **subconsulta** (*subquery*) é uma consulta SQL inserida dentro de outra consulta. O resultado da consulta interna pode ser usado pela consulta externa como um valor, uma lista de valores ou uma tabela temporária.
+
+# Subconsultas
+
+Uma subconsulta deve estar entre parênteses. Sua posição depende de como o resultado será utilizado:
+
+``` sql
+SELECT colunas
+FROM tabela
+WHERE coluna operador (
+    SELECT coluna
+    FROM outra_tabela
+);
+```
+
+## Subconsulta que retorna um único valor
+
+Uma subconsulta escalar retorna uma única coluna e uma única linha. Ela pode ser comparada com operadores como `=`, `>`, `<` e `<=`. No exemplo, a consulta interna calcula o preço médio e a consulta externa seleciona os produtos mais caros que essa média:
+
+``` sql
+SELECT name, price
+FROM products
+WHERE price > (
+    SELECT AVG(price)
+    FROM products
+);
+```
+
+## Subconsulta que retorna vários valores
+
+Quando a consulta interna pode retornar vários valores, podemos usar `IN` para verificar se um valor pertence à lista retornada. O exemplo seleciona produtos que pertencem a categorias cujo nome contém “Moda”:
+
+``` sql
+SELECT name, price, category_id
+FROM products
+WHERE category_id IN (
+    SELECT id
+    FROM categories
+    WHERE name LIKE '%Moda%'
+);
+```
+
+## `EXISTS` e `NOT EXISTS`
+
+`EXISTS` verifica se a subconsulta retorna pelo menos uma linha. `NOT EXISTS` verifica se ela não retorna nenhuma. As consultas abaixo encontram, respectivamente, clientes que possuem pedidos e clientes que não possuem pedidos:
+
+``` sql
+SELECT c.id, c.first_name, c.last_name
+FROM customers AS c
+WHERE EXISTS (
+    SELECT 1
+    FROM orders AS o
+    WHERE o.customer_id = c.id
+);
+```
+
+``` sql
+SELECT c.id, c.first_name, c.last_name
+FROM customers AS c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders AS o
+    WHERE o.customer_id = c.id
+);
+```
+
+## Subconsulta correlacionada
+
+Uma subconsulta correlacionada faz referência a uma coluna da consulta externa. Neste exemplo, para cada cliente, a consulta interna conta quantos pedidos pertencem a ele:
+
+``` sql
+SELECT
+    c.id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    (
+        SELECT COUNT(*)
+        FROM orders AS o
+        WHERE o.customer_id = c.id
+    ) AS order_count
+FROM customers AS c;
+```
+
+Também podemos usar uma subconsulta correlacionada para comparar cada produto com os demais produtos da mesma categoria. A consulta retorna o produto ou os produtos de maior preço em cada categoria:
+
+``` sql
+SELECT p.name, p.price, p.category_id
+FROM products AS p
+WHERE p.price = (
+    SELECT MAX(p2.price)
+    FROM products AS p2
+    WHERE p2.category_id = p.category_id
+);
+```
+
+## Subconsulta na cláusula `FROM`
+
+Uma subconsulta na cláusula `FROM` produz uma tabela derivada, que deve receber um alias. No exemplo, primeiro contamos os pedidos de cada cliente; depois, selecionamos os clientes com pelo menos dois pedidos:
+
+``` sql
+SELECT customer_id, order_count
+FROM (
+    SELECT customer_id, COUNT(*) AS order_count
+    FROM orders
+    GROUP BY customer_id
+) AS orders_by_customer
+WHERE order_count >= 2;
+```
+
+## Exercícios
+
+Utilize os arquivos `orders.csv`, `customers.csv`, `products.csv` e `categories.csv`, disponíveis na pasta `datasets/dados_consumo` do [repositório](https://github.com/pedroallmeiida/introducao_banco_dados). Importe cada arquivo para uma tabela MySQL com o mesmo nome. As colunas relacionadas são `orders.customer_id` e `customers.id`, além de `products.category_id` e `categories.id`.
+
+1.  Use uma subconsulta escalar para listar os produtos cujo preço é maior que o preço médio de todos os produtos.
+2.  Use `IN` para listar os produtos que pertencem a categorias com “Moda” no nome.
+3.  Use `EXISTS` para listar os clientes que fizeram pelo menos um pedido.
+4.  Use `NOT EXISTS` para listar os clientes que ainda não fizeram pedidos.
+5.  Exiba o identificador e o nome de cada cliente, além da quantidade de pedidos associados a ele, usando uma subconsulta correlacionada na lista de seleção.
+6.  Use uma subconsulta na cláusula `FROM` para calcular a quantidade de pedidos por cliente e exiba somente aqueles com pelo menos dois pedidos.
+7.  Liste os produtos cujo preço é maior que a média de preço dos produtos da mesma categoria.

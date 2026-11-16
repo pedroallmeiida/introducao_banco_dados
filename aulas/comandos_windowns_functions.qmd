@@ -1,0 +1,346 @@
+---
+title: "Funções de janela (window functions)"
+author: "Pedro Almeida"
+lang: pt-BR
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-tools: false
+---
+
+Funções de janela (*window functions*) permitem calcular informações sobre um conjunto de linhas relacionadas à linha atual sem transformar várias linhas em uma única linha. Elas são úteis para criar rankings, totais acumulados, comparar um registro com o anterior ou o próximo e calcular estatísticas por grupo.
+
+Os exemplos usam as tabelas `orders`, `customers`, `products` e `categories`, disponíveis na pasta `datasets/dados_consumo` do [repositório](https://github.com/pedroallmeiida/introducao_banco_dados).
+
+# O que é uma janela?
+
+Uma janela é o conjunto de linhas que participa do cálculo de uma função para cada linha do resultado. Diferentemente de `GROUP BY`, uma função de janela não reduz o número de linhas retornadas.
+
+Por exemplo, `COUNT(*)` com `GROUP BY` retorna uma linha por cliente:
+
+``` sql
+SELECT
+    customer_id,
+    COUNT(*) AS order_count
+FROM orders
+GROUP BY customer_id;
+```
+
+Com `COUNT(*) OVER`, a quantidade de pedidos é calculada e exibida em cada linha do pedido:
+
+``` sql
+SELECT
+    id AS order_id,
+    customer_id,
+    COUNT(*) OVER (PARTITION BY customer_id) AS customer_order_count
+FROM orders;
+```
+
+O primeiro resultado tem uma linha por cliente; o segundo mantém uma linha por pedido.
+
+# Sintaxe geral
+
+Uma função de janela recebe a cláusula `OVER`:
+
+``` sql
+funcao(valor) OVER (
+    [PARTITION BY coluna1, coluna2, ...]
+    [ORDER BY coluna3 [ASC | DESC], ...]
+    [ROWS ou RANGE entre os limites da janela]
+)
+```
+
+| Parte             | Finalidade                                                 |
+|------------------------------------|------------------------------------|
+| `OVER()`          | Indica que a função será calculada como função de janela.  |
+| `PARTITION BY`    | Divide as linhas em grupos independentes, sem eliminá-las. |
+| `ORDER BY`        | Define a ordem usada no cálculo.                           |
+| `ROWS` ou `RANGE` | Define quais linhas da partição participam do cálculo.     |
+
+Uma janela sem `PARTITION BY` considera todas as linhas do resultado. Uma janela com `PARTITION BY customer_id` reinicia o cálculo para cada cliente.
+
+## Ordem do processamento
+
+A janela é calculada depois de `FROM`, `WHERE`, `GROUP BY` e `HAVING`. Por isso, o exemplo abaixo calcula o ranking somente entre pedidos entregues:
+
+``` sql
+SELECT
+    id AS order_id,
+    customer_id,
+    created_at,
+    ROW_NUMBER() OVER (ORDER BY created_at) AS order_number
+FROM orders
+WHERE status = 'entregue';
+```
+
+Funções de janela não podem ser usadas diretamente em `WHERE`. Para filtrar o resultado de uma janela, use uma consulta comum de tabela derivada:
+
+``` sql
+SELECT order_id, customer_id, order_rank
+FROM (
+    SELECT
+        id AS order_id,
+        customer_id,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY created_at, id
+        ) AS order_rank
+    FROM orders
+) AS numbered_orders
+WHERE order_rank <= 3;
+```
+
+# Ordenação e particionamento
+
+## `ROW_NUMBER`
+
+`ROW_NUMBER()` atribui um número sequencial a cada linha. O `id` foi incluído no `ORDER BY` para desempatar datas iguais e produzir um resultado determinístico:
+
+``` sql
+SELECT
+    id AS order_id,
+    customer_id,
+    created_at,
+    ROW_NUMBER() OVER (
+        PARTITION BY customer_id
+        ORDER BY created_at, id
+    ) AS customer_order_number
+FROM orders;
+```
+
+## `RANK` e `DENSE_RANK`
+
+As três funções abaixo criam classificações, mas tratam empates de forma distinta:
+
+``` sql
+SELECT
+    id,
+    customer_id,
+    created_at,
+    ROW_NUMBER() OVER (ORDER BY created_at) AS row_number_value,
+    RANK() OVER (ORDER BY created_at) AS rank_value,
+    DENSE_RANK() OVER (ORDER BY created_at) AS dense_rank_value
+FROM orders;
+```
+
+-   `ROW_NUMBER()` nunca repete a posição; em um empate, a ordem depende dos critérios adicionais.
+-   `RANK()` atribui a mesma posição aos empates e deixa lacunas na sequência.
+-   `DENSE_RANK()` atribui a mesma posição aos empates, mas não deixa lacunas.
+
+Para ranquear produtos dentro de cada categoria pelo preço, do maior para o menor:
+
+``` sql
+SELECT
+    p.id AS product_id,
+    p.name,
+    p.category_id,
+    p.price,
+    DENSE_RANK() OVER (
+        PARTITION BY p.category_id
+        ORDER BY p.price DESC
+    ) AS price_rank
+FROM products AS p;
+```
+
+# Agregações como funções de janela
+
+`SUM`, `AVG`, `MIN`, `MAX` e `COUNT` também podem ser usadas com `OVER`. Assim, cada linha pode mostrar seu valor individual e uma medida do grupo:
+
+``` sql
+SELECT
+    p.id AS product_id,
+    p.category_id,
+    p.name,
+    p.price,
+    AVG(p.price) OVER (
+        PARTITION BY p.category_id
+    ) AS category_average_price,
+    p.price - AVG(p.price) OVER (
+        PARTITION BY p.category_id
+    ) AS difference_from_category_average
+FROM products AS p;
+```
+
+O total de pedidos de cada cliente pode ser exibido junto de cada pedido e, depois, usado para calcular a participação daquele pedido no total:
+
+``` sql
+SELECT
+    o.id AS order_id,
+    o.customer_id,
+    o.status,
+    COUNT(*) OVER (
+        PARTITION BY o.customer_id
+    ) AS customer_order_count,
+    1.0 / COUNT(*) OVER (
+        PARTITION BY o.customer_id
+    ) AS order_share
+FROM orders AS o;
+```
+
+## Total acumulado e moldura da janela
+
+Com `ORDER BY`, uma agregação pode ser acumulada ao longo do tempo. A moldura `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` significa “da primeira linha até a linha atual”:
+
+``` sql
+SELECT
+    id AS order_id,
+    created_at,
+    ROW_NUMBER() OVER (ORDER BY created_at, id) AS order_number,
+    COUNT(*) OVER (
+        ORDER BY created_at, id
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS accumulated_order_count
+FROM orders;
+```
+
+Quando o objetivo é calcular uma média móvel de três pedidos, a moldura pode ser definida como duas linhas anteriores mais a linha atual:
+
+``` sql
+SELECT
+    id AS order_id,
+    created_at,
+    AVG(id) OVER (
+        ORDER BY created_at, id
+        ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) AS moving_average_of_ids
+FROM orders;
+```
+
+O primeiro resultado usa apenas as linhas disponíveis; não é necessário haver três linhas anteriores.
+
+# Comparando linhas com `LAG` e `LEAD`
+
+`LAG` acessa uma linha anterior e `LEAD` acessa uma linha posterior na ordem definida. São úteis para medir diferenças entre eventos:
+
+``` sql
+SELECT
+    id AS order_id,
+    customer_id,
+    created_at,
+    LAG(created_at) OVER (
+        PARTITION BY customer_id
+        ORDER BY created_at, id
+    ) AS previous_order_date,
+    LEAD(created_at) OVER (
+        PARTITION BY customer_id
+        ORDER BY created_at, id
+    ) AS next_order_date
+FROM orders;
+```
+
+O primeiro pedido de cada cliente não possui pedido anterior, portanto `LAG` retorna `NULL`. Para calcular a diferença entre o pedido atual e o anterior, use `DATEDIFF`:
+
+``` sql
+SELECT
+    order_id,
+    customer_id,
+    created_at,
+    DATEDIFF(
+        created_at,
+        previous_order_date
+    ) AS days_since_previous_order
+FROM (
+    SELECT
+        id AS order_id,
+        customer_id,
+        created_at,
+        LAG(created_at) OVER (
+            PARTITION BY customer_id
+            ORDER BY created_at, id
+        ) AS previous_order_date
+    FROM orders
+) AS orders_with_previous_date;
+```
+
+# Distribuição e seleção de posições
+
+## `NTILE`
+
+`NTILE(n)` divide as linhas ordenadas em `n` grupos aproximadamente iguais. O exemplo separa os produtos em quatro faixas de preço, da mais barata à mais cara:
+
+``` sql
+SELECT
+    id AS product_id,
+    name,
+    price,
+    NTILE(4) OVER (ORDER BY price, id) AS price_quartile
+FROM products;
+```
+
+## `FIRST_VALUE` e `LAST_VALUE`
+
+`FIRST_VALUE` e `LAST_VALUE` retornam um valor da primeira ou da última linha da janela. Para que `LAST_VALUE` considere toda a partição, é importante explicitar a moldura até `UNBOUNDED FOLLOWING`:
+
+``` sql
+SELECT
+    id AS product_id,
+    category_id,
+    name,
+    price,
+    FIRST_VALUE(name) OVER (
+        PARTITION BY category_id
+        ORDER BY price DESC, id
+    ) AS most_expensive_product,
+    LAST_VALUE(name) OVER (
+        PARTITION BY category_id
+        ORDER BY price DESC, id
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) AS least_expensive_product
+FROM products;
+```
+
+# Combinando tabelas com funções de janela
+
+Uma função de janela pode ser usada depois de um `JOIN`. Neste exemplo, cada produto recebe uma posição dentro de sua categoria e o nome da categoria é mostrado no resultado:
+
+``` sql
+SELECT
+    c.name AS category_name,
+    p.name AS product_name,
+    p.price,
+    RANK() OVER (
+        PARTITION BY p.category_id
+        ORDER BY p.price DESC
+    ) AS category_price_rank
+FROM products AS p
+INNER JOIN categories AS c
+    ON c.id = p.category_id;
+```
+
+# Funções de janela e `GROUP BY`
+
+As duas abordagens resolvem problemas diferentes. `GROUP BY` reduz o resultado para uma linha por grupo; uma função de janela mantém as linhas detalhadas. É possível combinar as abordagens em uma tabela derivada:
+
+``` sql
+SELECT
+    category_id,
+    product_count,
+    RANK() OVER (ORDER BY product_count DESC) AS category_count_rank
+FROM (
+    SELECT
+        category_id,
+        COUNT(*) AS product_count
+    FROM products
+    GROUP BY category_id
+) AS category_totals;
+```
+
+# Exercícios
+
+Para todos os exercícios, importe os arquivos `orders.csv`, `customers.csv`, `products.csv` e `categories.csv`, disponíveis na pasta `datasets/dados_consumo` do [repositório](https://github.com/pedroallmeiida/introducao_banco_dados), para tabelas MySQL com os mesmos nomes. As colunas relacionadas são `orders.customer_id = customers.id` e `products.category_id = categories.id`. Use o MySQL 8.0 ou superior.
+
+1.  Liste todos os pedidos com `id`, `customer_id` e `created_at`, atribuindo um número sequencial global pela data de criação usando `ROW_NUMBER()`.
+2.  Numere os pedidos de cada cliente, do mais antigo para o mais recente, usando `PARTITION BY`. Inclua o nome completo do cliente.
+3.  Crie um ranking dos produtos dentro de cada categoria, ordenado pelo preço decrescente. Gere colunas com `ROW_NUMBER()`, `RANK()` e `DENSE_RANK()` e compare o resultado quando houver preços empatados.
+4.  Liste cada produto, seu preço e a média de preço da respectiva categoria. Adicione uma coluna indicando se o produto está acima, abaixo ou exatamente na média.
+5.  Para cada pedido, mostre a quantidade total de pedidos do cliente e a porcentagem que ele representa desse total.
+6.  Ordene os pedidos por data e calcule a quantidade acumulada de pedidos. Depois, repita o cálculo reiniciando a contagem para cada cliente.
+7.  Calcule uma média móvel usando o preço do produto atual e os dois produtos anteriores na ordem crescente de preço.
+8.  Para cada cliente, mostre a data do pedido atual e a data do pedido anterior usando `LAG()`. Em uma consulta externa, calcule quantos dias se passaram entre os dois pedidos.
+9.  Para cada pedido, mostre também a data do próximo pedido do mesmo cliente usando `LEAD()`. Identifique os clientes que não têm um próximo pedido.
+10. Divida os produtos em quatro grupos de preço com `NTILE(4)` e conte quantos produtos ficaram em cada grupo.
+11. Liste apenas os três pedidos mais antigos de cada cliente. Use `ROW_NUMBER()` em uma consulta derivada e filtre o resultado externo.
+12. Calcule a quantidade de produtos por categoria com `GROUP BY` e crie um ranking das categorias pela quantidade de produtos usando uma função de janela.
+13. Usando `FIRST_VALUE()` e `LAST_VALUE()`, mostre, em cada linha de produto, o nome do produto mais caro e do mais barato da mesma categoria.
+14. Explique, com um exemplo próprio, por que `COUNT(*) ... GROUP BY     customer_id` e `COUNT(*) OVER (PARTITION BY customer_id)` podem produzir números de linhas diferentes.

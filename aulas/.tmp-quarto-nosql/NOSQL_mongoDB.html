@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Pedro Almeida">
+
+<title>Introdução a NoSQL e MongoDB</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="NOSQL_mongoDB_files/libs/clipboard/clipboard.min.js"></script>
+<script src="NOSQL_mongoDB_files/libs/quarto-html/quarto.js"></script>
+<script src="NOSQL_mongoDB_files/libs/quarto-html/popper.min.js"></script>
+<script src="NOSQL_mongoDB_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="NOSQL_mongoDB_files/libs/quarto-html/anchor.min.js"></script>
+<link href="NOSQL_mongoDB_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="NOSQL_mongoDB_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="NOSQL_mongoDB_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="NOSQL_mongoDB_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="NOSQL_mongoDB_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#objetivos-da-aula" id="toc-objetivos-da-aula" class="nav-link active" data-scroll-target="#objetivos-da-aula">Objetivos da aula</a></li>
+  <li><a href="#o-que-é-nosql" id="toc-o-que-é-nosql" class="nav-link" data-scroll-target="#o-que-é-nosql">O que é NoSQL?</a>
+  <ul class="collapse">
+  <li><a href="#características-comuns" id="toc-características-comuns" class="nav-link" data-scroll-target="#características-comuns">Características comuns</a></li>
+  </ul></li>
+  <li><a href="#json-a-estrutura-dos-documentos" id="toc-json-a-estrutura-dos-documentos" class="nav-link" data-scroll-target="#json-a-estrutura-dos-documentos">JSON: a estrutura dos documentos</a>
+  <ul class="collapse">
+  <li><a href="#objetos-aninhados-e-arrays" id="toc-objetos-aninhados-e-arrays" class="nav-link" data-scroll-target="#objetos-aninhados-e-arrays">Objetos aninhados e arrays</a></li>
+  <li><a href="#json-e-bson" id="toc-json-e-bson" class="nav-link" data-scroll-target="#json-e-bson">JSON e BSON</a></li>
+  </ul></li>
+  <li><a href="#mongodb-documentos-e-coleções" id="toc-mongodb-documentos-e-coleções" class="nav-link" data-scroll-target="#mongodb-documentos-e-coleções">MongoDB: documentos e coleções</a>
+  <ul class="collapse">
+  <li><a href="#modelo-relacional-e-modelo-de-documentos" id="toc-modelo-relacional-e-modelo-de-documentos" class="nav-link" data-scroll-target="#modelo-relacional-e-modelo-de-documentos">Modelo relacional e modelo de documentos</a></li>
+  </ul></li>
+  <li><a href="#dataset-de-exemplo" id="toc-dataset-de-exemplo" class="nav-link" data-scroll-target="#dataset-de-exemplo">Dataset de exemplo</a></li>
+  <li><a href="#iniciando-o-mongodb" id="toc-iniciando-o-mongodb" class="nav-link" data-scroll-target="#iniciando-o-mongodb">Iniciando o MongoDB</a></li>
+  <li><a href="#importando-o-arquivo-json" id="toc-importando-o-arquivo-json" class="nav-link" data-scroll-target="#importando-o-arquivo-json">Importando o arquivo JSON</a></li>
+  <li><a href="#operações-básicas-no-mongodb" id="toc-operações-básicas-no-mongodb" class="nav-link" data-scroll-target="#operações-básicas-no-mongodb">Operações básicas no MongoDB</a>
+  <ul class="collapse">
+  <li><a href="#inserindo-documentos" id="toc-inserindo-documentos" class="nav-link" data-scroll-target="#inserindo-documentos">Inserindo documentos</a></li>
+  <li><a href="#consultando-documentos" id="toc-consultando-documentos" class="nav-link" data-scroll-target="#consultando-documentos">Consultando documentos</a></li>
+  <li><a href="#atualizando-documentos" id="toc-atualizando-documentos" class="nav-link" data-scroll-target="#atualizando-documentos">Atualizando documentos</a></li>
+  <li><a href="#removendo-documentos" id="toc-removendo-documentos" class="nav-link" data-scroll-target="#removendo-documentos">Removendo documentos</a></li>
+  </ul></li>
+  <li><a href="#agregação" id="toc-agregação" class="nav-link" data-scroll-target="#agregação">Agregação</a></li>
+  <li><a href="#índices" id="toc-índices" class="nav-link" data-scroll-target="#índices">Índices</a></li>
+  <li><a href="#boas-práticas" id="toc-boas-práticas" class="nav-link" data-scroll-target="#boas-práticas">Boas práticas</a></li>
+  <li><a href="#exercícios" id="toc-exercícios" class="nav-link" data-scroll-target="#exercícios">Exercícios</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introdução a NoSQL e MongoDB</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor</div>
+    <div class="quarto-title-meta-contents">
+             <p>Pedro Almeida </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="objetivos-da-aula" class="level1">
+<h1>Objetivos da aula</h1>
+<p>Ao final desta aula, você deverá ser capaz de:</p>
+<ul>
+<li>explicar o que é um banco de dados NoSQL;</li>
+<li>diferenciar dados relacionais e documentos;</li>
+<li>reconhecer a estrutura básica de JSON;</li>
+<li>entender a relação entre JSON, BSON, documentos e coleções;</li>
+<li>criar, consultar, atualizar e remover documentos no MongoDB;</li>
+<li>importar um arquivo JSON para uma coleção;</li>
+<li>realizar agregações simples.</li>
+</ul>
+</section>
+<section id="o-que-é-nosql" class="level1">
+<h1>O que é NoSQL?</h1>
+<p><strong>NoSQL</strong> significa, originalmente, “Not Only SQL” (“não apenas SQL”). O termo é usado para agrupar bancos de dados que não dependem exclusivamente do modelo relacional tradicional de tabelas, linhas e colunas.</p>
+<p>Em vez de impor um único modelo de dados, os bancos NoSQL oferecem diferentes formas de organizar informações. Os principais tipos são:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Tipo</th>
+<th>Estrutura principal</th>
+<th>Exemplos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Documentos</td>
+<td>Documentos semelhantes a JSON</td>
+<td>MongoDB, CouchDB</td>
+</tr>
+<tr class="even">
+<td>Chave-valor</td>
+<td>Pares <code>chave: valor</code></td>
+<td>Redis, Amazon DynamoDB</td>
+</tr>
+<tr class="odd">
+<td>Colunar</td>
+<td>Famílias de colunas</td>
+<td>Cassandra, HBase</td>
+</tr>
+<tr class="even">
+<td>Grafos</td>
+<td>Vértices e arestas</td>
+<td>Neo4j, Amazon Neptune</td>
+</tr>
+</tbody>
+</table>
+<p>NoSQL não significa que o banco não possa realizar consultas ou que SQL seja sempre inadequado. A escolha depende do formato dos dados, dos padrões de acesso, da necessidade de transações, da escala e dos requisitos da aplicação.</p>
+<section id="características-comuns" class="level2">
+<h2 class="anchored" data-anchor-id="características-comuns">Características comuns</h2>
+<p>Muitos bancos NoSQL são projetados para:</p>
+<ul>
+<li>armazenar grandes volumes de dados;</li>
+<li>distribuir dados entre vários servidores;</li>
+<li>crescer horizontalmente, adicionando máquinas ao sistema;</li>
+<li>trabalhar com dados sem esquema rígido;</li>
+<li>adaptar a estrutura do documento à aplicação;</li>
+<li>atender consultas de alta velocidade em casos específicos.</li>
+</ul>
+<p>Essas características não eliminam a necessidade de modelagem. Mesmo em um banco sem esquema rígido, é importante definir nomes, tipos, relacionamentos e regras de validação consistentes.</p>
+</section>
+</section>
+<section id="json-a-estrutura-dos-documentos" class="level1">
+<h1>JSON: a estrutura dos documentos</h1>
+<p><strong>JSON</strong> (<em>JavaScript Object Notation</em>) é um formato textual usado para representar dados estruturados. Ele é formado por objetos, arrays e valores.</p>
+<p>Um objeto JSON é delimitado por chaves e contém pares de propriedade e valor:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"nome"</span><span class="fu">:</span> <span class="st">"Ana"</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"idade"</span><span class="fu">:</span> <span class="dv">22</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"ativo"</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Os tipos de valores permitidos no JSON são:</p>
+<ul>
+<li>string, entre aspas duplas;</li>
+<li>número inteiro ou decimal;</li>
+<li>booleano <code>true</code> ou <code>false</code>;</li>
+<li><code>null</code>;</li>
+<li>objeto, entre <code>{ }</code>;</li>
+<li>array, entre <code>[ ]</code>.</li>
+</ul>
+<p>Uma propriedade deve sempre ter aspas duplas. JSON não permite comentários, vírgula depois do último item ou aspas simples no lugar de aspas duplas.</p>
+<section id="objetos-aninhados-e-arrays" class="level2">
+<h2 class="anchored" data-anchor-id="objetos-aninhados-e-arrays">Objetos aninhados e arrays</h2>
+<p>Um valor pode ser outro objeto ou um array:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"nome"</span><span class="fu">:</span> <span class="st">"Ana"</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"endereco"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"cidade"</span><span class="fu">:</span> <span class="st">"Campina Grande"</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"estado"</span><span class="fu">:</span> <span class="st">"PB"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"interesses"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"bancos de dados"</span><span class="ot">,</span> <span class="st">"Python"</span><span class="ot">,</span> <span class="st">"estatística"</span><span class="ot">]</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>O documento acima tem uma propriedade <code>endereco</code>, que é um objeto embutido, e uma propriedade <code>interesses</code>, que é um array de strings.</p>
+</section>
+<section id="json-e-bson" class="level2">
+<h2 class="anchored" data-anchor-id="json-e-bson">JSON e BSON</h2>
+<p>O MongoDB armazena documentos em <strong>BSON</strong> (<em>Binary JSON</em>), uma representação binária do JSON. BSON mantém os tipos básicos do JSON e adiciona tipos úteis para bancos de dados, como:</p>
+<ul>
+<li><code>ObjectId</code>;</li>
+<li>data e hora;</li>
+<li>números inteiros de diferentes tamanhos;</li>
+<li>números decimais;</li>
+<li>dados binários.</li>
+</ul>
+<p>O MongoDB cria normalmente um campo <code>_id</code> para identificar cada documento. No MongoDB Shell, um identificador pode ser representado por <code>ObjectId()</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">_id</span><span class="op">:</span> <span class="fu">ObjectId</span>(<span class="st">"65a000000000000000000001"</span>)<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">nome</span><span class="op">:</span> <span class="st">"Ana"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>O arquivo desta aula usa strings no campo <code>_id</code> para permanecer um JSON válido e facilitar a importação com <code>mongoimport</code>.</p>
+</section>
+</section>
+<section id="mongodb-documentos-e-coleções" class="level1">
+<h1>MongoDB: documentos e coleções</h1>
+<p>No MongoDB:</p>
+<ul>
+<li>um <strong>banco de dados</strong> contém coleções;</li>
+<li>uma <strong>coleção</strong> contém documentos;</li>
+<li>um <strong>documento</strong> é semelhante a um objeto JSON;</li>
+<li>um <strong>campo</strong> corresponde a uma propriedade do documento;</li>
+<li>um <strong>array</strong> pode armazenar vários valores ou subdocumentos.</li>
+</ul>
+<p>Uma coleção pode conter documentos com campos diferentes. Essa flexibilidade é chamada de <strong>esquema flexível</strong>. Flexível não significa desorganizado: a aplicação pode definir validações para garantir que os documentos importantes tenham a mesma estrutura.</p>
+<section id="modelo-relacional-e-modelo-de-documentos" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-relacional-e-modelo-de-documentos">Modelo relacional e modelo de documentos</h2>
+<p>Em um modelo relacional, um cliente e seus endereços poderiam estar separados em tabelas relacionadas por chaves:</p>
+<pre class="text"><code>customers(id, name, email)
+addresses(id, customer_id, city, state)</code></pre>
+<p>No modelo de documentos, os dados usados juntos podem ser armazenados no mesmo documento:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"_id"</span><span class="fu">:</span> <span class="st">"customer-001"</span><span class="fu">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Ana Souza"</span><span class="fu">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"email"</span><span class="fu">:</span> <span class="st">"ana@example.com"</span><span class="fu">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"address"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"city"</span><span class="fu">:</span> <span class="st">"Campina Grande"</span><span class="fu">,</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"state"</span><span class="fu">:</span> <span class="st">"PB"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Embuta dados quando eles fazem parte do mesmo contexto e são consultados juntos. Use referências quando os dados forem compartilhados, crescerem sem limite ou forem atualizados separadamente.</p>
+</section>
+</section>
+<section id="dataset-de-exemplo" class="level1">
+<h1>Dataset de exemplo</h1>
+<p>O arquivo <a href="../datasets/dados_nosql/clientes_mongodb.json">clientes_mongodb.json</a> contém documentos de clientes com endereço, preferências e pedidos embutidos. Cada item do array JSON é um documento que será importado para a coleção <code>customers</code>.</p>
+<p>Um dos documentos possui esta estrutura resumida:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"_id"</span><span class="fu">:</span> <span class="st">"customer-001"</span><span class="fu">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"name"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"first"</span><span class="fu">:</span> <span class="st">"Ana"</span><span class="fu">,</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"last"</span><span class="fu">:</span> <span class="st">"Souza"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"email"</span><span class="fu">:</span> <span class="st">"ana.souza@example.com"</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"address"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"city"</span><span class="fu">:</span> <span class="st">"Campina Grande"</span><span class="fu">,</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"state"</span><span class="fu">:</span> <span class="st">"PB"</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"preferences"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"livros"</span><span class="ot">,</span> <span class="st">"tecnologia"</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"orders"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"number"</span><span class="fu">:</span> <span class="st">"order-1001"</span><span class="fu">,</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"delivered"</span><span class="fu">,</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"total"</span><span class="fu">:</span> <span class="fl">129.90</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Observe que <code>name</code> e <code>address</code> são objetos aninhados, enquanto <code>preferences</code> e <code>orders</code> são arrays. Um pedido também é um documento embutido dentro do cliente.</p>
+</section>
+<section id="iniciando-o-mongodb" class="level1">
+<h1>Iniciando o MongoDB</h1>
+<p>Os exemplos podem ser executados no <strong>MongoDB Shell</strong> (<code>mongosh</code>) conectado a uma instância local ou a um cluster do MongoDB Atlas.</p>
+<p>Para selecionar um banco chamado <code>loja_aula</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>use loja_aula</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>O banco e a coleção podem ser criados automaticamente quando o primeiro documento for inserido:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">insertOne</span>({</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-999"</span><span class="op">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">name</span><span class="op">:</span> {</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">first</span><span class="op">:</span> <span class="st">"Cliente"</span><span class="op">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">last</span><span class="op">:</span> <span class="st">"Teste"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">email</span><span class="op">:</span> <span class="st">"cliente.teste@example.com"</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para listar os bancos e as coleções:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>show dbs</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>show collections</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="importando-o-arquivo-json" class="level1">
+<h1>Importando o arquivo JSON</h1>
+<p>Com o servidor MongoDB em execução, use o comando <code>mongoimport</code> no terminal, fora do <code>mongosh</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mongoimport `</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span>db loja_aula `</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span>collection customers `</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span>file datasets\dados_nosql\clientes_mongodb<span class="op">.</span><span class="fu">json</span> `</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span>jsonArray</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>O parâmetro <code>--jsonArray</code> informa que o arquivo contém um único array com vários documentos. Sem esse parâmetro, o <code>mongoimport</code> espera, por padrão, um documento JSON por linha.</p>
+<p>Depois da importação, no <code>mongosh</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>use loja_aula</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">countDocuments</span>()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="operações-básicas-no-mongodb" class="level1">
+<h1>Operações básicas no MongoDB</h1>
+<section id="inserindo-documentos" class="level2">
+<h2 class="anchored" data-anchor-id="inserindo-documentos">Inserindo documentos</h2>
+<p><code>insertOne()</code> insere um documento:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">insertOne</span>({</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-010"</span><span class="op">,</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">name</span><span class="op">:</span> {</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">first</span><span class="op">:</span> <span class="st">"Bruno"</span><span class="op">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">last</span><span class="op">:</span> <span class="st">"Lima"</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">email</span><span class="op">:</span> <span class="st">"bruno.lima@example.com"</span><span class="op">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">address</span><span class="op">:</span> {</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">city</span><span class="op">:</span> <span class="st">"João Pessoa"</span><span class="op">,</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">state</span><span class="op">:</span> <span class="st">"PB"</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">preferences</span><span class="op">:</span> [<span class="st">"esportes"</span>]</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>insertMany()</code> insere vários documentos de uma vez:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">insertMany</span>([</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-011"</span><span class="op">,</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">name</span><span class="op">:</span> { <span class="dt">first</span><span class="op">:</span> <span class="st">"Carla"</span><span class="op">,</span> <span class="dt">last</span><span class="op">:</span> <span class="st">"Melo"</span> }<span class="op">,</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">email</span><span class="op">:</span> <span class="st">"carla.melo@example.com"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-012"</span><span class="op">,</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">name</span><span class="op">:</span> { <span class="dt">first</span><span class="op">:</span> <span class="st">"Diego"</span><span class="op">,</span> <span class="dt">last</span><span class="op">:</span> <span class="st">"Ramos"</span> }<span class="op">,</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">email</span><span class="op">:</span> <span class="st">"diego.ramos@example.com"</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="consultando-documentos" class="level2">
+<h2 class="anchored" data-anchor-id="consultando-documentos">Consultando documentos</h2>
+<p><code>find()</code> retorna documentos que atendem ao filtro. Um objeto vazio retorna todos:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>({})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para encontrar clientes de um estado:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>({</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"address.state"</span><span class="op">:</span> <span class="st">"PB"</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>O ponto em <code>"address.state"</code> acessa um campo de um objeto aninhado. Para mostrar apenas alguns campos, use uma projeção:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  { <span class="st">"address.state"</span><span class="op">:</span> <span class="st">"PB"</span> }<span class="op">,</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">_id</span><span class="op">:</span> <span class="dv">0</span><span class="op">,</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"name.first"</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"name.last"</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">email</span><span class="op">:</span> <span class="dv">1</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Os operadores de comparação mais comuns são:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Operador</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>$eq</code></td>
+<td>igual</td>
+</tr>
+<tr class="even">
+<td><code>$ne</code></td>
+<td>diferente</td>
+</tr>
+<tr class="odd">
+<td><code>$gt</code></td>
+<td>maior que</td>
+</tr>
+<tr class="even">
+<td><code>$gte</code></td>
+<td>maior ou igual</td>
+</tr>
+<tr class="odd">
+<td><code>$lt</code></td>
+<td>menor que</td>
+</tr>
+<tr class="even">
+<td><code>$lte</code></td>
+<td>menor ou igual</td>
+</tr>
+<tr class="odd">
+<td><code>$in</code></td>
+<td>pertence a uma lista</td>
+</tr>
+<tr class="even">
+<td><code>$nin</code></td>
+<td>não pertence a uma lista</td>
+</tr>
+</tbody>
+</table>
+<p>Exemplo: encontrar clientes que possuem pelo menos um pedido com total maior que 100:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>({</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"orders.total"</span><span class="op">:</span> { <span class="dt">$gt</span><span class="op">:</span> <span class="dv">100</span> }</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para combinar condições, use <code>$and</code> ou <code>$or</code>:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>({</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">$and</span><span class="op">:</span> [</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    { <span class="st">"address.state"</span><span class="op">:</span> <span class="st">"PB"</span> }<span class="op">,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">preferences</span><span class="op">:</span> <span class="st">"tecnologia"</span> }</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  ]</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="atualizando-documentos" class="level2">
+<h2 class="anchored" data-anchor-id="atualizando-documentos">Atualizando documentos</h2>
+<p><code>updateOne()</code> atualiza o primeiro documento que corresponde ao filtro. Use operadores de atualização, como <code>$set</code>, para alterar campos:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">updateOne</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  { <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-001"</span> }<span class="op">,</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$set</span><span class="op">:</span> {</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"address.number"</span><span class="op">:</span> <span class="dv">100</span><span class="op">,</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">phone</span><span class="op">:</span> <span class="st">"83999990000"</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para adicionar um item a um array sem permitir duplicatas, use <code>$addToSet</code>:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">updateOne</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  { <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-001"</span> }<span class="op">,</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$addToSet</span><span class="op">:</span> {</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">preferences</span><span class="op">:</span> <span class="st">"cursos"</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para adicionar um novo pedido ao array, use <code>$push</code>:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">updateOne</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  { <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-001"</span> }<span class="op">,</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$push</span><span class="op">:</span> {</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">orders</span><span class="op">:</span> {</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">number</span><span class="op">:</span> <span class="st">"order-1010"</span><span class="op">,</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">status</span><span class="op">:</span> <span class="st">"pending"</span><span class="op">,</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">total</span><span class="op">:</span> <span class="fl">89.90</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>updateMany()</code> atualiza todos os documentos que correspondem ao filtro:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">updateMany</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  { <span class="st">"address.state"</span><span class="op">:</span> <span class="st">"PB"</span> }<span class="op">,</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$set</span><span class="op">:</span> {</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">region</span><span class="op">:</span> <span class="st">"Nordeste"</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="removendo-documentos" class="level2">
+<h2 class="anchored" data-anchor-id="removendo-documentos">Removendo documentos</h2>
+<p>Remova um documento específico com <code>deleteOne()</code>:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">deleteOne</span>({</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">_id</span><span class="op">:</span> <span class="st">"customer-010"</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para remover todos os documentos que atendem a uma condição, use <code>deleteMany()</code>. Execute essa operação com cuidado:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">deleteMany</span>({</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">region</span><span class="op">:</span> <span class="st">"teste"</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="agregação" class="level1">
+<h1>Agregação</h1>
+<p>O método <code>aggregate()</code> executa um pipeline. Cada estágio recebe o resultado do estágio anterior e o transforma.</p>
+<p>O exemplo abaixo calcula a quantidade e o total dos pedidos por cliente:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">aggregate</span>([</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$unwind</span><span class="op">:</span> <span class="st">"$orders"</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$group</span><span class="op">:</span> {</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">_id</span><span class="op">:</span> <span class="st">"$_id"</span><span class="op">,</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">customer_name</span><span class="op">:</span> { <span class="dt">$first</span><span class="op">:</span> <span class="st">"$name"</span> }<span class="op">,</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">order_count</span><span class="op">:</span> { <span class="dt">$sum</span><span class="op">:</span> <span class="dv">1</span> }<span class="op">,</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">total_spent</span><span class="op">:</span> { <span class="dt">$sum</span><span class="op">:</span> <span class="st">"$orders.total"</span> }</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$sort</span><span class="op">:</span> {</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">total_spent</span><span class="op">:</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Os estágios usados são:</p>
+<ul>
+<li><code>$unwind</code>: transforma cada item do array <code>orders</code> em uma linha do pipeline;</li>
+<li><code>$group</code>: agrupa documentos e calcula valores;</li>
+<li><code>$sum</code>: soma números ou conta ocorrências;</li>
+<li><code>$first</code>: preserva o primeiro valor encontrado no grupo;</li>
+<li><code>$sort</code>: ordena o resultado; <code>1</code> é crescente e <code>-1</code> é decrescente.</li>
+</ul>
+<p>Para selecionar apenas pedidos entregues antes de agrupá-los:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">aggregate</span>([</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$unwind</span><span class="op">:</span> <span class="st">"$orders"</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$match</span><span class="op">:</span> {</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">"orders.status"</span><span class="op">:</span> <span class="st">"delivered"</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">$group</span><span class="op">:</span> {</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">_id</span><span class="op">:</span> <span class="st">"$address.state"</span><span class="op">,</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">delivered_orders</span><span class="op">:</span> { <span class="dt">$sum</span><span class="op">:</span> <span class="dv">1</span> }</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="índices" class="level1">
+<h1>Índices</h1>
+<p>Um índice pode acelerar consultas frequentes, mas ocupa espaço e pode tornar inserções e atualizações um pouco mais custosas.</p>
+<p>Para criar um índice no email:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">createIndex</span>({</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">email</span><span class="op">:</span> <span class="dv">1</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Para criar um índice no campo aninhado <code>address.state</code>:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">createIndex</span>({</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"address.state"</span><span class="op">:</span> <span class="dv">1</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Consulte os índices existentes com:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">getIndexes</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Use <code>explain()</code> para observar o plano de execução de uma consulta:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode javascript code-with-copy"><code class="sourceCode javascript"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>db<span class="op">.</span><span class="at">customers</span><span class="op">.</span><span class="fu">find</span>({</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"address.state"</span><span class="op">:</span> <span class="st">"PB"</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">.</span><span class="fu">explain</span>(<span class="st">"executionStats"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="boas-práticas" class="level1">
+<h1>Boas práticas</h1>
+<ul>
+<li>Defina uma convenção para nomes de coleções e campos.</li>
+<li>Use <code>_id</code> para identificar cada documento de forma única.</li>
+<li>Escolha entre embutir e referenciar conforme o padrão de acesso.</li>
+<li>Evite arrays que crescem indefinidamente dentro de um único documento.</li>
+<li>Valide campos essenciais quando a aplicação exigir uma estrutura consistente.</li>
+<li>Crie índices para consultas frequentes, mas evite índices desnecessários.</li>
+<li>Não use <code>deleteMany()</code> sem verificar antes o filtro com <code>find()</code>.</li>
+<li>Separe dados de teste dos dados reais.</li>
+<li>Considere o tamanho máximo de um documento MongoDB, que é de 16 MB.</li>
+</ul>
+</section>
+<section id="exercícios" class="level1">
+<h1>Exercícios</h1>
+<p>Use o arquivo <a href="../datasets/dados_nosql/clientes_mongodb.json">clientes_mongodb.json</a> e importe-o para o banco <code>loja_aula</code>, na coleção <code>customers</code>.</p>
+<ol type="1">
+<li>Conte quantos documentos existem na coleção usando <code>countDocuments()</code>.</li>
+<li>Liste todos os clientes mostrando somente <code>_id</code>, email e estado.</li>
+<li>Encontre os clientes que moram no estado <code>PB</code>.</li>
+<li>Encontre os clientes que possuem <code>"tecnologia"</code> no array <code>preferences</code>.</li>
+<li>Encontre clientes que possuem pelo menos um pedido com total maior que <code>100</code>.</li>
+<li>Insira um novo cliente com nome, email, cidade e uma preferência.</li>
+<li>Atualize o email de um cliente usando <code>updateOne()</code> e <code>$set</code>.</li>
+<li>Adicione uma preferência usando <code>$addToSet</code> e verifique se a operação não cria duplicatas.</li>
+<li>Adicione um pedido ao array <code>orders</code> usando <code>$push</code>.</li>
+<li>Use <code>aggregate()</code> com <code>$unwind</code> e <code>$group</code> para calcular o total gasto por estado.</li>
+<li>Use <code>$match</code> e <code>$group</code> para contar somente os pedidos com status <code>delivered</code>.</li>
+<li>Crie um índice para <code>"address.state"</code> e compare a consulta com <code>explain("executionStats")</code>.</li>
+<li>Crie um documento com uma estrutura diferente dos demais. Consulte-o e explique por que o MongoDB permite essa flexibilidade.</li>
+<li>Discuta se <code>orders</code> deveria continuar embutido em <code>customers</code> caso um cliente pudesse realizar milhões de pedidos. Proponha um modelo alternativo usando referências.</li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiada");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiada");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
